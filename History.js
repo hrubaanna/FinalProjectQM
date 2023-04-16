@@ -1,9 +1,15 @@
-import React, {useRef} from 'react';
-import {Animated, StyleSheet, Text, View, Button, FlatList} from 'react-native';
+import React, { useRef } from "react";
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  FlatList,
+} from "react-native";
+import Navigation from "./Navigation";
 
-const GenerationItem = props => {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
+const GenerationItem = (props) => {
   return (
     <View>
       <Text style={styles.generationItem}>
@@ -13,40 +19,32 @@ const GenerationItem = props => {
   );
 };
 
-const HistoryScreen = ({navigation}) => {
+const HistoryScreen = () => {
   return (
-    <View style={{flex: 1, flexDirection: 'column'}}>
+    <View style={{ flex: 1, flexDirection: "column" }}>
       <View style={styles.generationsList}>
         {/* All previous additions */}
         <FlatList
           data={[
-            {location: 'Hackney', time: 'Monday'},
-            {location: 'Camden', time: 'Friday'},
-            {location: 'Kensington', time: 'Thursday'},
-            {location: 'Islington', time: 'Monday'},
-            {location: 'Hackney', time: 'Tuesday'},
-            {location: 'Chelsea', time: 'Wednesday'},
-            {location: 'Hackney', time: 'Saturday'},
-            {location: 'Camden', time: 'Saturday'},
-            {location: 'Fulham', time: 'Sunday'},
-            {location: 'Hackney', time: 'Monday'},
-            {location: 'Kensington', time: 'Wednesday'},
-            {location: 'Hackney', time: 'Monday'},
-            {location: 'Fulham', time: 'Thursday'},
-            {location: 'Islington', time: 'Friday'},
-            {location: 'Westminster', time: 'Saturday'},
+            { location: "Hackney", time: "Monday" },
+            { location: "Camden", time: "Friday" },
+            { location: "Kensington", time: "Thursday" },
+            { location: "Islington", time: "Monday" },
+            { location: "Hackney", time: "Tuesday" },
+            { location: "Chelsea", time: "Wednesday" },
+            { location: "Hackney", time: "Saturday" },
+            { location: "Camden", time: "Saturday" },
+            { location: "Fulham", time: "Sunday" },
+            { location: "Hackney", time: "Monday" },
+            { location: "Kensington", time: "Wednesday" },
+            { location: "Hackney", time: "Monday" },
+            { location: "Fulham", time: "Thursday" },
+            { location: "Islington", time: "Friday" },
+            { location: "Westminster", time: "Saturday" },
           ]}
-          renderItem={({item}) => (
+          renderItem={({ item }) => (
             <GenerationItem location={item.location} time={item.time} />
           )}
-        />
-      </View>
-
-      <View style={styles.navigationSpace}>
-        {/* Navigation space */}
-        <Button
-          onPress={() => navigation.navigate('Home')}
-          title="Go to Home Screen"
         />
       </View>
     </View>
@@ -56,14 +54,14 @@ const HistoryScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   generationsList: {
     flex: 6,
-    backgroundColor: 'timberbrown',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "timberbrown",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 20,
   },
   generationItem: {
     marginTop: 10,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 10,
     //span the whole width of the screen
@@ -71,7 +69,7 @@ const styles = StyleSheet.create({
   },
   navigationSpace: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingTop: 20,
   },
 });

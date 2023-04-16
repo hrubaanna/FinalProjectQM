@@ -1,9 +1,20 @@
-import React from 'react';
-import {StyleSheet, Button, Image, Text, View} from 'react-native';
+import React from "react";
+import { StyleSheet, Button, Image, Text, View } from "react-native";
+import Navigation from "./Navigation";
+import CAComp from "./CAComp";
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({ navigation }) => {
+  const patterns = [
+    //array of patterns and their coordinates
+    {
+      pattern: "glider",
+      x: 5,
+      y: 5,
+    },
+  ];
+
   return (
-    <View style={{flexDirection: 'column', flex: 1}}>
+    <View style={{ flexDirection: "column", flex: 1 }}>
       <View style={styles.lastGeneration}>
         {/* This view holds the information about the last generation
             added by the user
@@ -11,22 +22,12 @@ const HomeScreen = ({navigation}) => {
         <Text style={styles.primaryText}>
           Take a look at your last addition:
         </Text>
-        <Image
-          style={styles.tempImg}
-          source={{uri: 'https://reactnative.dev/img/tiny_logo.png'}}
-        />
+        <CAComp location="Home" patterns={patterns} />
         <Text style={styles.secondaryText}>Location: Hackney</Text>
         <Text style={styles.secondaryText}>Time: Monday</Text>
       </View>
-      <View style={styles.navigationSpace}>
-        {/* This view is the navigation space  */}
-        <Button
-          onPress={() => navigation.navigate('History')}
-          title="See History"
-        />
-        <Button onPress={() => navigation.navigate('Add')} title="Add new" />
-        <Button onPress={() => navigation.navigate('Map')} title="Map" />
-      </View>
+      {/* This view is the navigation space  */}
+      <Navigation navigation={navigation} />
     </View>
   );
 };
@@ -34,24 +35,17 @@ const HomeScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   lastGeneration: {
     flex: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'blue',
-  },
-  navigationSpace: {
-    flexDirection: 'row',
-    flex: 1,
-    backgroundColor: 'white',
-    paddingTop: 20,
-    justifyContent: 'space-evenly',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "blue",
   },
   primaryText: {
-    color: 'white',
+    color: "white",
     margin: 10,
     fontSize: 20,
   },
   secondaryText: {
-    color: 'white',
+    color: "white",
     margin: 10,
     fontSize: 15,
   },

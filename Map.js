@@ -1,10 +1,25 @@
-import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import CAComp from "./CAComp";
 
-const MapScreen = ({navigation}) => {
+const MapScreen = () => {
+  const patterns = [
+    //array of patterns and their coordinates
+    {
+      pattern: "loaf",
+      x: 15,
+      y: 20,
+    },
+    {
+      pattern: "glider",
+      x: 40,
+      y: 10,
+    },
+  ];
+
   return (
     <View>
-      <Text>View your map</Text>
+      <CAComp location="Map" patterns={patterns} />
     </View>
   );
 };
