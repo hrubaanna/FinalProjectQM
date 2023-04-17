@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import CAComp from "./CAComp";
+import { Dimensions } from "react-native";
 
 const MapScreen = () => {
   const patterns = [
@@ -9,17 +10,29 @@ const MapScreen = () => {
       pattern: "loaf",
       x: 15,
       y: 20,
+      color: "rgb(255, 255, 0)",
     },
     {
       pattern: "glider",
-      x: 40,
-      y: 10,
+      x: 13,
+      y: 18,
+      color: "rgb(255, 128, 0)",
     },
   ];
 
+  const width = Dimensions.get("window").width;
+  const numRows = 100;
+  const numCols = 60;
+  const cellWidth = width / numCols;
+
   return (
     <View>
-      <CAComp location="Map" patterns={patterns} />
+      <CAComp
+        numRows={numRows}
+        numCols={numCols}
+        cellWidth={cellWidth}
+        patterns={patterns}
+      />
     </View>
   );
 };

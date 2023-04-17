@@ -3,10 +3,12 @@ import GetLocation from "react-native-get-location";
 import Geocoder from "react-native-geocoding";
 import { launchCamera } from "react-native-image-picker";
 import ImageColors from "react-native-image-colors";
+import CAComp from "./CAComp";
+import { Dimensions } from "react-native";
 
 import { Button, Image, StyleSheet, Text, TextInput, View } from "react-native";
 
-const AddScreen = ({ navigation }) => {
+const AddScreen = () => {
   const [text, onChangeText] = React.useState(null);
   const [location, setLocation] = React.useState(null);
   const [area, setArea] = React.useState(null);
@@ -15,9 +17,13 @@ const AddScreen = ({ navigation }) => {
   const [imgUri, setImgUri] = React.useState(null);
   const [showImage, setShowImage] = React.useState(false);
   const [prominentColor, setProminentColor] = React.useState(null);
+  const [showCA, setShowCA] = React.useState(false);
+  const [patterns, setPatterns] = React.useState([]);
 
-  const imageWidth = 200;
-  const imageHeight = 200;
+  const width = Dimensions.get("window").width;
+  const numRows = 20;
+  const numCols = 20;
+  const cellWidth = width / numCols;
 
   handleGetLocation = () => {
     // Get current location of the device
@@ -37,7 +43,7 @@ const AddScreen = ({ navigation }) => {
       });
 
     // Get address from latidude & longitude.
-    Geocoder.init("AIzaSyDoJNnJmVXJpPJQU1hBR3Ti-1LXAfFWI_A");
+    Geocoder.init(process.env.GOOGLE_API_KEY);
 
     Geocoder.from(location.latitude, location.longitude)
       .then((json) => {
@@ -51,12 +57,6 @@ const AddScreen = ({ navigation }) => {
         var areaName = area ? area.long_name : "Not found";
         console.log(`Area name is ${areaName}`);
         setArea(areaName);
-
-        // console.log("_______________________");
-        // console.log("Address:");
-        // console.log(json.results[0]);
-        // console.log(addressComponent);
-        // console.log("_______________________");
       })
       .catch((error) => console.warn(error));
   };
@@ -111,12 +111,25 @@ const AddScreen = ({ navigation }) => {
 
   extractDominantColor = async () => {
     const result = await ImageColors.getColors(imgUri, {
-      fallback: "white",
+      fallback: "rgb(255, 255, 255)",
       cache: true,
       key: "myKey",
     });
-
     setProminentColor(result.primary);
+  };
+
+  createPattern = () => {
+    //based on the dominant color, create a new pattern
+    const newPattern = {
+      pattern: "glider",
+      x: 5,
+      y: 5,
+      color: prominentColor,
+    };
+
+    setPatterns((prevPatterns) => [...prevPatterns, newPattern]);
+    console.log(patterns);
+    setShowCA(true);
   };
 
   return (
@@ -143,6 +156,16 @@ const AddScreen = ({ navigation }) => {
         placeholder="Enter description"
         value={text}
       />
+      <Button title="Create CA" onPress={this.createPattern} />
+      {/* if showCA is true, show CA element */}
+      {showCA ? (
+        <CAComp
+          numRows={numRows}
+          numCols={numCols}
+          cellWidth={cellWidth}
+          patterns={patterns}
+        />
+      ) : null}
       <Button title="Submit" />
     </View>
   );

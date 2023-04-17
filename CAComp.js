@@ -3,60 +3,22 @@ import { Button, View, Dimensions, TouchableOpacity } from "react-native";
 import produce from "immer";
 
 const CAComp = (props) => {
-  var numRows;
-  var numCols;
-  var cellWidth;
-
-  const { width, height } = Dimensions.get("window");
+  const { width } = Dimensions.get("window");
   const myPatterns = require("./patterns");
-  const simulationSpeed = 500;
-
-  //setup sizing and number of rows and cols depending on props
-  if (props.location == "Home" || props.location == "History") {
-    //on home screen and history, use 20 rows and 20 cols
-    numRows = 20;
-    numCols = 20;
-
-    //set the width of the cells to be 1/20th of the width of the screen
-    console.log("width: " + width);
-    console.log("numCols: " + numCols);
-
-    cellWidth = 270 / numCols;
-  } else {
-    //on MAP screen, use 60 rows and 50 cols
-    numRows = 90;
-    numCols = 60;
-    cellWidth = width / numCols;
-  }
-
-  gridStyle = () => {
-    if (props.location == "Home") {
-      return {
-        //padding: 50,
-        height: 300,
-        width: 300,
-        borderWidth: 1,
-      };
-    } else if (props.location == "History") {
-    } else {
-      return {
-        padding: 0,
-      };
-    }
-  };
+  const Color = require("color");
+  const simulationSpeed = 200;
 
   const [grid, setGrid] = React.useState(() => {
     const rows = [];
-    for (let i = 0; i < numRows; i++) {
-      //rows.push(Array.from(Array(numCols), () => 0));
+    for (let i = 0; i < props.numRows; i++) {
       //setup random grid
       rows.push(
-        Array.from(Array(numCols), () =>
+        Array.from(Array(props.numCols), () =>
           //populate the grid with cells that are object with a random value and a color
           ({
             //value: Math.random() > 0.7 ? 1 : 0,
             value: 0,
-            color: Math.random() > 0.7 ? "red" : "blue",
+            color: Math.random() > 0.7 ? "rgb(255,0,0)" : "rgb(0,0,255)",
           })
         )
       );
@@ -85,21 +47,27 @@ const CAComp = (props) => {
         return produce(g, (gridCopy) => {
           //now we can perform a mutaiton on gridCopy
           //and it will set the state on the grid
-          for (let i = 0; i < numRows; i++) {
-            for (let j = 0; j < numCols; j++) {
+          for (let i = 0; i < props.numRows; i++) {
+            for (let j = 0; j < props.numCols; j++) {
               //check every value in the grid
               //figure out how many neighbors it has
               let neighbors = 0;
+              //collect the colors of the neighbors
+              let neighborColors = [];
+              neighborColors.push(g[i][j].color);
               myPatterns.operations.forEach(([x, y]) => {
                 const newI = i + x;
                 const newJ = j + y;
                 if (
                   newI >= 0 &&
-                  newI < numRows &&
+                  newI < props.numRows &&
                   newJ >= 0 &&
-                  newJ < numCols
+                  newJ < props.numCols
                 ) {
                   neighbors += g[newI][newJ].value;
+                  if (g[newI][newJ].value === 1) {
+                    neighborColors.push(g[newI][newJ].color);
+                  }
                 }
               });
 
@@ -110,6 +78,26 @@ const CAComp = (props) => {
               } else if (g[i][j].value === 0 && neighbors === 3) {
                 //cell is born or continues to live
                 gridCopy[i][j].value = 1;
+
+                //calculate the average color of alive neighbors
+                let red = 0;
+                let green = 0;
+                let blue = 0;
+
+                neighborColors.forEach((color) => {
+                  const colorObj = Color(color);
+                  red += colorObj.red();
+                  green += colorObj.green();
+                  blue += colorObj.blue();
+                });
+
+                const numColors = neighborColors.length;
+                red = Math.floor(red / numColors);
+                green = Math.floor(green / numColors);
+                blue = Math.floor(blue / numColors);
+
+                //set the new color for gridCopy[i][j]
+                gridCopy[i][j].color = `rgb(${red}, ${green}, ${blue})`;
               }
             }
           }
@@ -124,24 +112,34 @@ const CAComp = (props) => {
   const loadPatterns = () => {
     //load patterns passed in from props
     if (props.patterns) {
+      console.log("patterns: " + props.patterns);
       props.patterns.forEach((pat) => {
-        addPattern(pat.x, pat.y, myPatterns[pat.pattern]);
+        console.log(
+          "Adding pattern: " + pat.pattern + " at " + pat.x + ", " + pat.y + ""
+        );
+        addPattern(pat.y, pat.x, myPatterns[pat.pattern], pat.color);
       });
     }
   };
 
-  const addPattern = (i, j, pattern) => {
+  const addPattern = (i, j, pattern, color) => {
     //add a pattern to the grid
     setGrid((g) => {
       return produce(g, (gridCopy) => {
         for (let x = 0; x < pattern.length; x++) {
           for (let y = 0; y < pattern[x].length; y++) {
             gridCopy[i + x][j + y].value = pattern[x][y];
+            gridCopy[i + x][j + y].color = color;
           }
         }
       });
     });
   };
+
+  const [patterns, setPatterns] = React.useState(() => {
+    //set up patterns to be added to the grid
+    loadPatterns();
+  });
 
   return (
     <TouchableOpacity
@@ -154,9 +152,8 @@ const CAComp = (props) => {
         //toggle running
         running ? setRunning(false) : setRunning(true);
       }}
-      style={gridStyle()}
+      // style={gridStyle()}
     >
-      <Button title="add patterns" onPress={() => loadPatterns()} />
       <View
         style={{
           display: "flex",
@@ -165,13 +162,15 @@ const CAComp = (props) => {
         }}
       >
         {grid.map((rows, i) =>
-          rows.map((col, k) => (
+          rows.map((cols, k) => (
             <View
               key={`${i}-${k}`}
               style={{
-                width: cellWidth,
-                height: cellWidth,
-                backgroundColor: grid[i][k].value ? grid[i][k].color : "white",
+                width: props.cellWidth,
+                height: props.cellWidth,
+                backgroundColor: grid[i][k].value
+                  ? grid[i][k].color
+                  : "rgb(255,255,255)",
                 borderWidth: 0,
               }}
             />

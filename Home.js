@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Button, Image, Text, View } from "react-native";
 import Navigation from "./Navigation";
 import CAComp from "./CAComp";
+import { Dimensions } from "react-native";
 
 const HomeScreen = ({ navigation }) => {
   const patterns = [
@@ -10,8 +11,14 @@ const HomeScreen = ({ navigation }) => {
       pattern: "glider",
       x: 5,
       y: 5,
+      color: "rgb(128, 0, 128)",
     },
   ];
+
+  const width = Dimensions.get("window").width;
+  const numRows = 20;
+  const numCols = 20;
+  const cellWidth = width / numCols;
 
   return (
     <View style={{ flexDirection: "column", flex: 1 }}>
@@ -22,9 +29,13 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.primaryText}>
           Take a look at your last addition:
         </Text>
-        <CAComp location="Home" patterns={patterns} />
-        <Text style={styles.secondaryText}>Location: Hackney</Text>
-        <Text style={styles.secondaryText}>Time: Monday</Text>
+        <CAComp
+          numRows={numRows}
+          numCols={numCols}
+          cellWidth={cellWidth}
+          patterns={patterns}
+        />
+        <Text style={styles.secondaryText}>Hackney, Monday</Text>
       </View>
       {/* This view is the navigation space  */}
       <Navigation navigation={navigation} />
@@ -37,15 +48,16 @@ const styles = StyleSheet.create({
     flex: 5,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "blue",
+    backgroundColor: "white",
   },
   primaryText: {
-    color: "white",
+    color: "#333",
     margin: 10,
     fontSize: 20,
+    fontWeight: "bold",
   },
   secondaryText: {
-    color: "white",
+    color: "#666",
     margin: 10,
     fontSize: 15,
   },
