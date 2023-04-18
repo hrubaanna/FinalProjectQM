@@ -112,24 +112,69 @@ const CAComp = (props) => {
   const loadPatterns = () => {
     //load patterns passed in from props
     if (props.patterns) {
-      console.log("patterns: " + props.patterns);
       props.patterns.forEach((pat) => {
-        console.log(
-          "Adding pattern: " + pat.pattern + " at " + pat.x + ", " + pat.y + ""
-        );
         addPattern(pat.y, pat.x, myPatterns[pat.pattern], pat.color);
       });
+    }
+  };
+
+  const generateNewPattern = () => {
+    //load patterns passed in from props
+    if (props.patterns) {
+      //wipe the grid
+      setGrid(() => {
+        const rows = [];
+        for (let i = 0; i < props.numRows; i++) {
+          //setup random grid
+          rows.push(
+            Array.from(Array(props.numCols), () =>
+              //populate the grid with cells that are object with a random value and a color
+              ({
+                value: 0,
+                color: "rgb(255, 255, 255)",
+              })
+            )
+          );
+        }
+
+        return rows;
+      });
+      //add the patterns back in
+      const randomPattern =
+        myPatterns.patternNames[
+          Math.floor(Math.random() * myPatterns.patternNames.length)
+        ];
+
+      console.log("number of patterns passed: ", props.patterns.length);
+      addPattern(
+        props.patterns[0].y,
+        props.patterns[0].x,
+        myPatterns[randomPattern],
+        props.patterns[0].color
+      );
     }
   };
 
   const addPattern = (i, j, pattern, color) => {
     //add a pattern to the grid
     setGrid((g) => {
+      console.log("adding pattern: ", pattern);
       return produce(g, (gridCopy) => {
         for (let x = 0; x < pattern.length; x++) {
           for (let y = 0; y < pattern[x].length; y++) {
-            gridCopy[i + x][j + y].value = pattern[x][y];
-            gridCopy[i + x][j + y].color = color;
+            //check if the pattern is out of bounds
+            if (
+              i + x < 0 ||
+              i + x >= props.numRows ||
+              j + y < 0 ||
+              j + y >= props.numCols
+            ) {
+              //if it is, don't add it
+              continue;
+            } else {
+              gridCopy[i + x][j + y].value = pattern[x][y];
+              gridCopy[i + x][j + y].color = color;
+            }
           }
         }
       });
@@ -140,6 +185,11 @@ const CAComp = (props) => {
     //set up patterns to be added to the grid
     loadPatterns();
   });
+
+  useEffect(() => {
+    //update the patterns when the props change
+    loadPatterns();
+  }, [props.patterns]);
 
   return (
     <TouchableOpacity
@@ -154,6 +204,9 @@ const CAComp = (props) => {
       }}
       // style={gridStyle()}
     >
+      {props.location == "Add" && (
+        <Button title="Generate new" onPress={() => generateNewPattern()} />
+      )}
       <View
         style={{
           display: "flex",

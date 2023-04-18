@@ -1,4 +1,4 @@
-.env.local
+Environment.js
 
 # Build and Release Folders
 bin-debug/

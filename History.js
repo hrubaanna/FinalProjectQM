@@ -1,25 +1,62 @@
-import React, { useRef } from "react";
+import React from "react";
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
-  Modal,
   FlatList,
-  Button,
 } from "react-native";
 import CAComp from "./CAComp";
 import axios from "axios";
+
+const dateToString = (dateTime) => {
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const date = new Date(dateTime);
+  const dayName = days[date.getDay()];
+  const monthName = months[date.getMonth()];
+  const day = date.getDate();
+
+  return `${dayName} ${monthName} ${day}`;
+};
 
 const GenerationItem = (props) => {
   return (
     <TouchableOpacity onPress={props.onPress}>
       <View style={styles.generationItem}>
         <Text style={styles.itemTitle}>{props.location}</Text>
-        <Text style={styles.itemSubtitle}>on {props.time}</Text>
-        <Text>{props.description}</Text>
+        <Text style={styles.itemSubtitle}>on {dateToString(props.time)}</Text>
+        <Text style={styles.itemSubtitle}>{props.description}</Text>
         <View style={styles.caCompContainer}>
-          <CAComp numRows={21} numCols={19} cellWidth={9} patterns={props.CA} />
+          <CAComp
+            location="History"
+            numRows={21}
+            numCols={19}
+            cellWidth={9}
+            patterns={props.CA}
+          />
         </View>
       </View>
     </TouchableOpacity>
@@ -27,14 +64,13 @@ const GenerationItem = (props) => {
 };
 
 const HistoryScreen = () => {
-  const [selectedItem, setSelectedItem] = React.useState(null);
-  const [detailsVisible, setDetailsVisible] = React.useState(false);
   const [data, setData] = React.useState([]);
 
   React.useEffect(() => {
+    //fetch the generations from the server, sorted by date
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/history");
+        const response = await axios.get("http://localhost:3000/historyRoutes");
         setData(response.data);
       } catch (err) {
         console.log("Error fetching data: ", err);
@@ -43,78 +79,23 @@ const HistoryScreen = () => {
     fetchData();
   }, []);
 
-  const handleItemPress = (item) => {
-    setSelectedItem(item);
-    setDetailsVisible(true);
-  };
-
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
       <View style={styles.generationsList}>
         {/* All previous additions */}
         <FlatList
-          data={
-            data
-            //   [
-            // {
-            //   location: "Hackney",
-            //   time: "Monday",
-            //   description: "A beautiful day in the park",
-            //   CA: [
-            //     { pattern: "glider", x: 5, y: 5, color: "rgb(128, 0, 128)" },
-            //   ],
-            // },
-            // {
-            //   location: "Camden",
-            //   time: "Friday",
-            //   description: "test",
-            //   CA: [{ pattern: "loaf", x: 5, y: 5, color: "rgb(266, 15, 20)" }],
-            // },
-            //   { location: "Kensington", time: "Thursday" },
-            //   { location: "Islington", time: "Monday" },
-            //   { location: "Hackney", time: "Tuesday" },
-            //   { location: "Chelsea", time: "Wednesday" },
-            //   { location: "Hackney", time: "Saturday" },
-            //   { location: "Camden", time: "Saturday" },
-            //   { location: "Fulham", time: "Sunday" },
-            //   { location: "Hackney", time: "Monday" },
-            //   { location: "Kensington", time: "Wednesday" },
-            //   { location: "Hackney", time: "Monday" },
-            //   { location: "Fulham", time: "Thursday" },
-            //   { location: "Islington", time: "Friday" },
-            //   { location: "Westminster", time: "Saturday" },
-            // ]
-          }
+          data={data}
           renderItem={({ item }) => (
             <GenerationItem
-              location={item.location}
+              location={item.locationName}
               time={item.time}
+              description={item.description}
               CA={item.CA}
-              onPress={() => handleItemPress(item)}
+              // onPress={() => handleItemPress(item)}
             />
           )}
         />
       </View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={detailsVisible}
-        onRequestClose={() => {
-          setDetailsVisible(!detailsVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text stlye={styles.itemSubtitle}>
-              {selectedItem && selectedItem.description}
-            </Text>
-            <Button
-              title="Close"
-              onPress={() => setDetailsVisible(!detailsVisible)}
-            />
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
