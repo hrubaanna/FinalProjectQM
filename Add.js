@@ -75,7 +75,10 @@ const AddScreen = () => {
     })
       .then((newLocation) => {
         //get address from latutude & longitude
-        const key = Environment.GOOGLE_API_KEY;
+        //const key = Environment.GOOGLE_API_KEY;
+        //for use with heroku:
+        const key = process.env.GOOGLE_API_KEY;
+
         Geocoder.init(key);
 
         Geocoder.from(newLocation.latitude, newLocation.longitude)

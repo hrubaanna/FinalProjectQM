@@ -2,7 +2,13 @@ const mongoose = require("mongoose");
 const Generation = require("./models/Generation");
 const Environment = require("./Environment");
 
-mongoose.connect(Environment.MONGODB_URI, {
+// mongoose.connect(Environment.MONGODB_URI, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
+
+//for use with heroku:
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

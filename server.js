@@ -8,7 +8,10 @@ app.use(cors());
 app.use(express.json());
 
 //Setup mongoDB connection string
-const mongoURI = Environment.MONGODB_URI;
+//const mongoURI = Environment.MONGODB_URI;
+
+//for use with heroku:
+const mongoURI = process.env.MONGODB_URI;
 
 //Connect to mongoDB
 mongoose
