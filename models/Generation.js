@@ -2,7 +2,10 @@ const mongoose = require("mongoose");
 
 //MongoDB schema for a generation
 const GenerationSchema = new mongoose.Schema({
-  location: String,
+  locationName: {
+    type: String,
+    required: true,
+  },
   location: {
     type: {
       type: String,
@@ -14,13 +17,24 @@ const GenerationSchema = new mongoose.Schema({
       required: true,
     },
   },
-  time: Date,
-  description: String,
+  time: {
+    type: Date,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
   CA: {
-    pattern: String,
-    x: Number,
-    y: Number,
-    color: String,
+    type: [
+      {
+        pattern: String,
+        x: Number,
+        y: Number,
+        color: String,
+      },
+    ],
+    required: true,
   },
 });
 

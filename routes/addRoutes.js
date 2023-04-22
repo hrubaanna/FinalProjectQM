@@ -6,6 +6,7 @@ const router = express.Router();
 // Add a new generation
 router.post("/", async (req, res) => {
   const { locationName, location, time, description, CA } = req.body;
+
   try {
     const newGeneration = new Generation({
       locationName,
@@ -14,6 +15,7 @@ router.post("/", async (req, res) => {
       description,
       CA,
     });
+
     const generation = await newGeneration.save();
     res.json(generation);
   } catch (err) {

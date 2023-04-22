@@ -188,21 +188,20 @@ const CAComp = (props) => {
   };
 
   const submitGeneration = async () => {
-    const { locationName, longitude, latitude, description, patterns } = props;
     const generationData = {
-      locationName: locationName,
+      locationName: props.locationName,
       location: {
         type: "Point",
-        coordinates: [longitude, latitude],
+        coordinates: [props.longitude, props.latitude],
       },
       time: new Date(),
-      description: description,
+      description: props.description,
       CA: [
         {
           pattern: currentPattern,
-          x: 10,
-          y: 10,
-          color: patterns[0].color,
+          x: 5,
+          y: 5,
+          color: props.patterns[0].color,
         },
       ],
     };
@@ -212,7 +211,12 @@ const CAComp = (props) => {
     try {
       const response = await axios.post(
         "https://glacial-escarpment-05495.herokuapp.com/addRoutes",
-        generationData
+        generationData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
       console.log("Generation submitted successfully: ", response.data);
     } catch (err) {
