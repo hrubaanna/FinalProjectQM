@@ -58,7 +58,7 @@ const MapScreen = () => {
 
       try {
         const response = await axios.get(
-          `http://localhost:3000/mapRoutes?latitude=${latitude}&longitude=${longitude}`
+          `https://glacial-escarpment-05495.herokuapp.com/mapRoutes?latitude=${latitude}&longitude=${longitude}`
         );
         //console.log("response data: ", JSON.stringify(response.data, null, 2));
         let mappedToCoordinates = getScaledCoordinates(

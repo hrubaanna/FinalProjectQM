@@ -70,7 +70,9 @@ const HistoryScreen = () => {
     //fetch the generations from the server, sorted by date
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/historyRoutes");
+        const response = await axios.get(
+          "https://glacial-escarpment-05495.herokuapp.com//historyRoutes"
+        );
         setData(response.data);
       } catch (err) {
         console.log("Error fetching data: ", err);

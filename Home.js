@@ -31,7 +31,9 @@ const HomeScreen = ({ navigation }) => {
     //fetch the single most recent generation from the database
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/homeRoutes");
+        const response = await axios.get(
+          "https://glacial-escarpment-05495.herokuapp.com/homeRoutes"
+        );
         //console.log("response data: ", JSON.stringify(response.data, null, 2));
         console.log("response data: ", response.data[0].CA);
         setData(response.data[0]);
