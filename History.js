@@ -71,7 +71,7 @@ const HistoryScreen = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://glacial-escarpment-05495.herokuapp.com//historyRoutes"
+          "https://glacial-escarpment-05495.herokuapp.com/historyRoutes"
         );
         setData(response.data);
       } catch (err) {

@@ -1,12 +1,15 @@
 import React, { useCallback, useEffect } from "react";
 import { Button, View, Dimensions, TouchableOpacity } from "react-native";
 import produce from "immer";
+import axios from "axios";
 
 const CAComp = (props) => {
   const { width } = Dimensions.get("window");
   const myPatterns = require("./patterns");
   const Color = require("color");
   const simulationSpeed = 200;
+
+  const [currentPattern, setCurrentPattern] = React.useState();
 
   const [grid, setGrid] = React.useState(() => {
     const rows = [];
@@ -112,6 +115,7 @@ const CAComp = (props) => {
   const loadPatterns = () => {
     //load patterns passed in from props
     if (props.patterns) {
+      console.log("patterns: ", props.patterns);
       props.patterns.forEach((pat) => {
         addPattern(pat.y, pat.x, myPatterns[pat.pattern], pat.color);
       });
@@ -145,7 +149,9 @@ const CAComp = (props) => {
           Math.floor(Math.random() * myPatterns.patternNames.length)
         ];
 
-      console.log("number of patterns passed: ", props.patterns.length);
+      setCurrentPattern(randomPattern);
+      console.log("setting current pattern as: ", randomPattern);
+
       addPattern(
         props.patterns[0].y,
         props.patterns[0].x,
@@ -179,6 +185,39 @@ const CAComp = (props) => {
         }
       });
     });
+  };
+
+  const submitGeneration = async () => {
+    const { locationName, longitude, latitude, description, patterns } = props;
+    const generationData = {
+      locationName: locationName,
+      location: {
+        type: "Point",
+        coordinates: [longitude, latitude],
+      },
+      time: new Date(),
+      description: description,
+      CA: [
+        {
+          pattern: currentPattern,
+          x: 10,
+          y: 10,
+          color: patterns[0].color,
+        },
+      ],
+    };
+
+    console.log("generation to be saved: ", generationData);
+
+    try {
+      const response = await axios.post(
+        "https://glacial-escarpment-05495.herokuapp.com/addRoutes",
+        generationData
+      );
+      console.log("Generation submitted successfully: ", response.data);
+    } catch (err) {
+      console.log("Error submitting generation: ", err);
+    }
   };
 
   const [patterns, setPatterns] = React.useState(() => {
@@ -230,6 +269,11 @@ const CAComp = (props) => {
           ))
         )}
       </View>
+      {props.location === "Add" && (
+        <>
+          <Button title="Submit" onPress={() => submitGeneration()} />
+        </>
+      )}
     </TouchableOpacity>
   );
 };

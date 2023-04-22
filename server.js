@@ -32,6 +32,9 @@ app.use("/homeRoutes", homeRoutes);
 const mapRoutes = require("./routes/mapRoutes");
 app.use("/mapRoutes", mapRoutes);
 
+const addRoutes = require("./routes/addRoutes");
+app.use("/addRoutes", addRoutes);
+
 //Setup port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

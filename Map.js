@@ -53,8 +53,8 @@ const MapScreen = () => {
       //Uncomment this line to use the user's location
       //const {latitude, longitude} = location;
 
-      const latitude = -0.053;
-      const longitude = 51.508;
+      const latitude = location.latitude;
+      const longitude = location.longitude;
 
       try {
         const response = await axios.get(

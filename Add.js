@@ -5,20 +5,19 @@ import { launchCamera } from "react-native-image-picker";
 import ImageColors from "react-native-image-colors";
 import CAComp from "./CAComp";
 import { Dimensions } from "react-native";
+import axios from "axios";
 
 import { Button, Image, StyleSheet, Text, TextInput, View } from "react-native";
 
 const AddScreen = () => {
   const [text, onChangeText] = React.useState(null);
-  const [location, setLocation] = React.useState(null);
   const [area, setArea] = React.useState(null);
-  const [imgPath, setImgPath] = React.useState(null);
-  const [imgData, setImgData] = React.useState(null);
+  const [latitude, setLatitude] = React.useState(null);
+  const [longitude, setLongitude] = React.useState(null);
   const [imgUri, setImgUri] = React.useState(null);
-  const [showImage, setShowImage] = React.useState(false);
   const [prominentColor, setProminentColor] = React.useState(null);
+  const [backgroundColor, setBackgroundColor] = React.useState("white");
   const [showCA, setShowCA] = React.useState(true);
-  const [patterns, setPatterns] = React.useState([]);
   const [step, setStep] = React.useState(0);
   const [description, setDescription] = React.useState(null);
 
@@ -29,10 +28,17 @@ const AddScreen = () => {
   var Environment = require("./Environment");
   const myPatterns = require("./patterns");
 
-  useEffect(() => {
-    //set the patterns to a random pattern from the patterns.js file
-    setPatterns(myPatterns[Math.floor(Math.random() * myPatterns.length)]);
-  });
+  const pattern = [
+    {
+      pattern:
+        myPatterns.patternNames[
+          Math.floor(Math.random() * myPatterns.patternNames.length)
+        ],
+      x: 5,
+      y: 5,
+      color: prominentColor,
+    },
+  ];
 
   handleNextStep = () => {
     if (step < 4) {
@@ -47,10 +53,8 @@ const AddScreen = () => {
       setImgPath(null);
       setImgData(null);
       setImgUri(null);
-      setShowImage(false);
       setProminentColor(null);
       setShowCA(false);
-      setPatterns([]);
       setDescription(null);
     }
   };
@@ -59,55 +63,72 @@ const AddScreen = () => {
     setDescription(text);
 
     if (step == 2) {
-      setShowImage(false);
       this.extractDominantColor();
-      console.log("dominant color: ", prominentColor);
     }
 
     handleNextStep();
   };
 
-  handleGetLocation = () => {
-    // Get current location of the device
-    GetLocation.getCurrentPosition({
-      enableHighAccuracy: true,
-      timeout: 15000,
-    })
-      .then((newLocation) => {
-        //get address from latutude & longitude
-        //const key = Environment.GOOGLE_API_KEY;
-        //for use with heroku:
-        const key = process.env.GOOGLE_API_KEY;
-
-        Geocoder.init(key);
-
-        Geocoder.from(newLocation.latitude, newLocation.longitude)
-          .then((json) => {
-            var addressComponent = json.results[0].address_components;
-
-            //find area name from addressComponent
-            var area = addressComponent.find((item) => {
-              return item.types.includes("neighborhood");
-            });
-
-            var areaName = area ? area.long_name : "Not found";
-            console.log(`Area name is ${areaName}`);
-            setArea(areaName);
-          })
-          .catch((error) => console.warn(error));
+  getCurrentLocation = () => {
+    return new Promise((resolve, reject) => {
+      GetLocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 15000,
       })
-      .catch((error) => {
-        const { code, message } = error;
-        console.warn(code, message);
-      });
+        .then((location) => {
+          resolve(location);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  };
 
-    //move to the next step
+  getLocationName = (latitude, longitude) => {
+    return new Promise((resolve, reject) => {
+      //use Google API to get the name of the location
+      //const key = Environment.GOOGLE_API_KEY;
+      //for use with heroku:
+      const key = process.env.GOOGLE_API_KEY;
+
+      Geocoder.init(key);
+      Geocoder.from(latitude, longitude)
+        .then((json) => {
+          var addressComponent = json.results[0].address_components;
+
+          //find area name from addressComponent
+          // var area = addressComponent.find((item) => {
+          //   return item.types.includes("neighborhood");
+          // });
+
+          var area = addressComponent[2].short_name;
+
+          //console.log(`Area name is ${areaName}`);
+          resolve(area);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  };
+
+  handleGetLocation = async () => {
+    // Get current location of the device
+    const locationData = await getCurrentLocation();
+    //get address from latutude & longitude
+    const areaName = await getLocationName(
+      locationData.latitude,
+      locationData.longitude
+    );
+    setLatitude(locationData.latitude);
+    setLongitude(locationData.longitude);
+    setArea(areaName);
     handleNextStep();
   };
 
   /***
    * handleImage:
-   * Open a camera and take a picture --> not working yet, must fix xcode to launch on iphone
+   * Open a camera and take a picture
    */
   handleImage = () => {
     // Open camera
@@ -129,33 +150,11 @@ const AddScreen = () => {
         console.log("User tapped custom button: ", response.customButton);
       } else {
         //let source = {uri: response.uri};
-        console.log("response", JSON.stringify(response));
-        setImgPath(response);
-        setImgData(response.data);
-        setImgUri(response.uri);
+        const asset = response.assets[0];
+        setImgUri(asset.uri);
       }
       console.log("_______________________");
     });
-
-    handleNextStep();
-  };
-
-  /**
-   * temp fix for handleImage:
-   * have a preloaded image to display
-   */
-  loadImageTemp = async () => {
-    const newImgUri =
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Halleyparknovember.jpg/1200px-Halleyparknovember.jpg";
-
-    await new Promise((resolve) => {
-      setImgUri(newImgUri);
-      resolve();
-    });
-    //toggle showImage
-    showImage ? setShowImage(false) : setShowImage(true);
-    // Extract dominant color from image
-    //this.extractDominantColor();
 
     handleNextStep();
   };
@@ -167,32 +166,16 @@ const AddScreen = () => {
       key: "myKey",
     });
     setProminentColor(result.primary);
+    setBackgroundColor(result.background);
+    setImgUri(null);
   };
 
-  changePattern = () => {
-    ///NOT IN USE
-
-    //only to be used in Add page (it cleans the entire grid)
-    //randomly select a new pattern from the list of patterns
-
-    console.log("color: ", prominentColor);
-    console.log("patterns: ", patterns);
-
-    const patternList = myPatterns.patternNames;
-    const randomPattern =
-      patternList[Math.floor(Math.random() * patternList.length)];
-
-    const newPattern = {
-      pattern: randomPattern,
-      x: 5,
-      y: 5,
-      color: prominentColor,
-    };
-
-    setPatterns((prevPatterns) => [...prevPatterns, newPattern]);
-    console.log(patterns);
-    setShowCA(true);
-  };
+  React.useEffect(() => {
+    //update the dominant color when it changes
+    if (prominentColor) {
+      pattern[0].color = prominentColor;
+    }
+  }, [prominentColor]);
 
   return (
     <View
@@ -210,11 +193,12 @@ const AddScreen = () => {
           width: "80%",
         }}
       ></View>
+
       <Text style={{ fontSize: 24 }}>Create a new generation:</Text>
 
       {area && <Text>Your location: {area}</Text>}
 
-      {showImage && imgUri && (
+      {imgUri && (
         <Image
           source={{
             uri: imgUri,
@@ -223,7 +207,7 @@ const AddScreen = () => {
         />
       )}
 
-      {description && <Text>{description}</Text>}
+      {description && <Text>Description: {description}</Text>}
 
       {/* The first step of adding a new generation: */}
       {step == 0 && (
@@ -234,7 +218,7 @@ const AddScreen = () => {
       {/* The second step of adding a new generation: */}
       {step == 1 && (
         <>
-          <Button title="Take a picture" onPress={this.loadImageTemp} />
+          <Button title="Take a picture" onPress={this.handleImage} />
         </>
       )}
 
@@ -263,13 +247,16 @@ const AddScreen = () => {
             <>
               <CAComp
                 location="Add"
+                locationName={area}
+                longitude={longitude}
+                latitude={latitude}
+                description={description}
                 numRows={numRows}
                 numCols={numCols}
                 cellWidth={cellWidth}
-                patterns={patterns}
+                patterns={pattern}
                 color={prominentColor}
               />
-              <Button title="Submit Generation" onPress={this.handleNextStep} />
             </>
           ) : null}
         </>

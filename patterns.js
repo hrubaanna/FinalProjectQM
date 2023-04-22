@@ -1,15 +1,7 @@
 //this file contains the various patterns that are used in the game
 
 module.exports = {
-  patternNames: [
-    "glider",
-    "pulsar",
-    "loaf",
-    "beacon",
-    "toad",
-    "blinker",
-    "boat",
-  ],
+  patternNames: ["glider", "loaf", "beacon", "toad", "blinker", "boat"],
   operations: [
     //representation of the 8 cells around a cell
     [0, 1],
