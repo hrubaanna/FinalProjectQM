@@ -6,13 +6,17 @@ import HomeScreen from "./Home";
 import HistoryScreen from "./History";
 import AddScreen from "./Add";
 import MapScreen from "./Map";
+import LoginScreen from "./LoginScreen";
+import RegisterScreen from "./RegisterScreen";
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="History" component={HistoryScreen} />
         <Stack.Screen name="Add" component={AddScreen} />
