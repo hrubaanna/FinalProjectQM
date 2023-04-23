@@ -7,16 +7,27 @@ const router = express.Router();
 //Create a new user
 router.post("/register", async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const existingUser = await User.findOne({ username: req.body.username });
+    if (existingUser) {
+      return res.status(409).json({ message: "Username already exists" });
+    }
+
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
     const newUser = new User({
-      username,
+      username: req.body.username,
       password: hashedPassword,
     });
 
-    const savedUser = await newUser.save();
-    res.json(savedUser);
+    await newUser.save();
+
+    // Generate and return a JSON Web Token
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    res.status(201).json({ token });
   } catch (err) {
     console.error("Error creating user ", err);
     res.status(500).json({ message: "Error creating user" });
@@ -26,20 +37,26 @@ router.post("/register", async (req, res) => {
 //Login
 router.post("/login", async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username: req.body.username });
 
     if (!user) {
-      res.status(401).json({ message: "Invalid username or password" });
+      res.status(404).json({ message: "User not found" });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
 
     if (!passwordMatch) {
-      res.status(401).json({ message: "Invalid username or password" });
+      res.status(400).json({ message: "Invalid password" });
     }
 
-    res.json({ message: "Login successful" });
+    // Generate and return a JSON Web Token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    res.json({ token });
   } catch (err) {
     console.error("Error logging in ", err);
     res.status(500).json({ message: "Error logging in" });
