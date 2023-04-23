@@ -116,7 +116,6 @@ const CAComp = (props) => {
   const loadPatterns = () => {
     //load patterns passed in from props
     if (props.patterns) {
-      console.log("patterns: ", props.patterns);
       props.patterns.forEach((pat) => {
         addPattern(pat.y, pat.x, myPatterns[pat.pattern], pat.color);
       });
@@ -165,7 +164,6 @@ const CAComp = (props) => {
   const addPattern = (i, j, pattern, color) => {
     //add a pattern to the grid
     setGrid((g) => {
-      console.log("adding pattern: ", pattern);
       return produce(g, (gridCopy) => {
         for (let x = 0; x < pattern.length; x++) {
           for (let y = 0; y < pattern[x].length; y++) {
@@ -211,7 +209,7 @@ const CAComp = (props) => {
       ],
     };
 
-    console.log("generation to be saved: ", generationData);
+    // console.log("generation to be saved: ", generationData);
 
     try {
       const response = await axios.post(

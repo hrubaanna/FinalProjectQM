@@ -5,24 +5,115 @@ import { Dimensions } from "react-native";
 import axios from "axios";
 import GetLocation from "react-native-get-location";
 
-const MapScreen = () => {
-  const patterns = [
-    //array of patterns and their coordinates
-    {
-      pattern: "loaf",
-      x: 0,
-      y: 30,
-      color: "rgb(255, 255, 0)",
-    },
-    {
-      pattern: "glider",
-      x: 30,
-      y: 0,
-      color: "rgb(255, 128, 0)",
-    },
-  ];
+const ScaleLineY = ({ distance }) => {
+  return (
+    <View
+      style={{
+        position: "absolute",
+        left: 1,
+        top: 5,
+        width: 1,
+        height: 640,
+        backgroundColor: "gray",
+        zIndex: 10,
+        justifyContent: "center",
+      }}
+    >
+      <Text
+        style={{
+          position: "absolute",
+          left: -25,
+          width: 70,
+          transform: [{ translateY: -0.5 * 10 }, { rotate: "-90deg" }],
+          color: "gray",
+          fontSize: 10,
+        }}
+      >
+        {Math.floor(distance)} meters
+      </Text>
+    </View>
+  );
+};
+const ScaleLineX = ({ distance }) => {
+  return (
+    <View
+      style={{
+        position: "absolute",
+        left: 5,
+        bottom: 0,
+        width: 380,
+        height: 1,
+        backgroundColor: "gray",
+        zIndex: 10,
+        justifyContent: "center",
+      }}
+    >
+      <Text
+        style={{
+          position: "absolute",
+          left: 4,
+          bottom: 2,
+          transform: [{ translateX: 160 }],
+          color: "gray",
+          fontSize: 10,
+        }}
+      >
+        {Math.floor(distance)} meters
+      </Text>
+    </View>
+  );
+};
 
+const CellSize = ({ width, height, cellSize }) => {
+  return (
+    <View
+      style={{
+        position: "absolute",
+        right: 30,
+        top: 10,
+        width: cellSize,
+        height: cellSize,
+        borderColor: "gray",
+        borderWidth: 1,
+        zIndex: 10,
+      }}
+    >
+      <Text
+        style={{
+          position: "absolute",
+          width: 20,
+          right: 1,
+          top: 10,
+          transform: [{ translateX: 10 }],
+          color: "gray",
+          fontSize: 10,
+        }}
+      >
+        {Math.floor(width)}
+      </Text>
+      <Text
+        style={{
+          position: "absolute",
+          right: 5,
+          top: -17,
+          width: 20,
+          transform: [{ translateY: 10 }, { rotate: "-90deg" }],
+          color: "gray",
+          fontSize: 10,
+        }}
+      >
+        {Math.floor(height)}
+      </Text>
+    </View>
+  );
+};
+
+const MapScreen = () => {
   const [data, setData] = React.useState([]);
+  const [scaleX, setScaleX] = React.useState(null);
+  const [scaleY, setScaleY] = React.useState(null);
+  const [cellSizeX, setCellSizeX] = React.useState(null);
+  const [cellSizeY, setCellSizeY] = React.useState(null);
   const width = Dimensions.get("window").width;
   const numRows = 100;
   const numCols = 60;
@@ -126,6 +217,10 @@ const MapScreen = () => {
 
     const scalingFactorX = maxDistance / userGridX;
     const scalingFactorY = maxDistance / userGridY;
+    setScaleY(scalingFactorY);
+    setScaleX(scalingFactorX);
+    setCellSizeX(scalingFactorX);
+    setCellSizeY(scalingFactorY);
 
     //transform the coordinates to the rows and cols of the grid
     const gridData = data.map((item) => {
@@ -145,26 +240,20 @@ const MapScreen = () => {
       );
 
       //get the sign of the distance
+      let multX = 1;
+      let multY = 1;
+
       if (userLatitude < latitude) {
-        distanceY *= -1;
+        multY - 1;
       }
       if (userLongitude > longitude) {
-        distanceX *= -1;
+        multX = -1;
       }
 
-      const gridX = userGridX + Math.floor(distanceX / scalingFactorX);
-      const gridY = userGridY + Math.floor(distanceY / scalingFactorY);
+      const gridX = userGridX + multX * Math.floor(distanceX / scalingFactorX);
+      const gridY = userGridY + multY * Math.floor(distanceY / scalingFactorY);
 
-      console.log(
-        "gridX: ",
-        gridX,
-        "gridY: ",
-        gridY,
-        "longitude: ",
-        longitude,
-        "latitude: ",
-        latitude
-      );
+      console.log("one unit of distance: ", scalingFactorX, scalingFactorY);
 
       const newItem = {
         CA: item.CA.map((ca) => ({
@@ -178,57 +267,13 @@ const MapScreen = () => {
     return gridData;
   };
 
-  const getCoordinates = (data, latitude, longitude) => {
-    //Calculate the rows and cols equivalents of the coordinates
-    //returned by the database
-    //DISNTANCE is applied from (0,0) as center of the grid
-    let minLongitude = Infinity;
-    let maxLongitude = -Infinity;
-    let minLatitude = Infinity;
-    let maxLatitude = -Infinity;
-
-    data.forEach(({ location: { coordinates } }) => {
-      const [longitude, latitude] = coordinates;
-      minLongitude = Math.min(minLongitude, longitude);
-      maxLongitude = Math.max(maxLongitude, longitude);
-      minLatitude = Math.min(minLatitude, latitude);
-      maxLatitude = Math.max(maxLatitude, latitude);
-    });
-
-    //map the coordinates to the rows and cols of the grid
-    const targetMinLongitude = 0;
-    const targetMaxLongitude = numCols * 0.6;
-    const targetMinLatitude = 0;
-    const targetMaxLatitude = numRows * 0.6;
-
-    const mappedArray = data.map((item) => {
-      const [longitude, latitude] = item.location.coordinates;
-
-      const newLongitude = Math.floor(
-        targetMinLongitude +
-          ((longitude - minLongitude) / (maxLongitude - minLongitude)) *
-            (targetMaxLongitude - targetMinLongitude)
-      );
-      const newLatitude = Math.floor(
-        targetMinLatitude +
-          ((latitude - minLatitude) / (maxLatitude - minLatitude)) *
-            (targetMaxLatitude - targetMinLatitude)
-      );
-
-      const newItem = {
-        CA: item.CA.map((ca) => ({
-          ...ca,
-          x: newLongitude,
-          y: newLatitude,
-        })),
-      };
-      return newItem;
-    });
-    return mappedArray;
-  };
-
   return (
     <View>
+      {scaleY !== null && <ScaleLineY distance={scaleY * numRows} />}
+      {scaleX !== null && <ScaleLineX distance={scaleX * numCols} />}
+      {cellSizeX !== null && cellSizeY !== null && (
+        <CellSize width={cellSizeX} height={cellSizeY} cellSize={cellWidth} />
+      )}
       <CAComp
         location="Map"
         numRows={numRows}
