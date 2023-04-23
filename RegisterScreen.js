@@ -17,7 +17,7 @@ const RegisterScreen = ({ navigation }) => {
 
   const handleRegister = async () => {
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      console.log("Passwords do not match");
       return;
     }
     try {
@@ -32,7 +32,6 @@ const RegisterScreen = ({ navigation }) => {
         console.log("Register successful");
         navigation.navigate("Login");
       } else {
-        alert("Register failed", "Please try again");
         console.log("Register failed");
       }
     } catch (error) {

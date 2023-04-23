@@ -25,7 +25,6 @@ const LoginScreen = ({ navigation }) => {
         console.log("Login successful");
         navigation.navigate("Home");
       } else {
-        Alert("Login failed", "Please try again");
         console.log("Login failed");
       }
     } catch (error) {
