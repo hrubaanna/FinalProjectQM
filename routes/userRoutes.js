@@ -28,7 +28,7 @@ router.post("/register", async (req, res) => {
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    res.status(201).json({ token });
+    res.status(201).json({ success: true, token: `Bearer ${token}` });
   } catch (err) {
     console.error("Error creating user ", err);
     res.status(500).json({ message: "Error creating user" });
@@ -57,7 +57,7 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    res.status(200).json({ token });
+    res.status(200).json({ success: true, token: `Bearer ${token}` });
   } catch (err) {
     console.error("Error logging in ", err);
     res.status(500).json({ message: "Error logging in" });

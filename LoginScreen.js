@@ -26,6 +26,7 @@ const LoginScreen = ({ navigation }) => {
         navigation.navigate("Home");
       } else {
         console.log("Login failed");
+        console.log("response: ", response.data);
       }
     } catch (error) {
       console.log("Error logging in: ", error);
