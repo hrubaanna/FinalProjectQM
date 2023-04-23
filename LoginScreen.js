@@ -1,5 +1,11 @@
 import React from "react";
-import { TouchableOpacity } from "react-native/types";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import axios from "axios";
 
 const LoginScreen = ({ navigation }) => {
