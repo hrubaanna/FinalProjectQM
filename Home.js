@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Button, Image, Text, View } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import Navigation from "./Navigation";
 import CAComp from "./CAComp";
 import { Dimensions } from "react-native";
@@ -27,22 +28,29 @@ const HomeScreen = ({ navigation }) => {
 
   const [data, setData] = React.useState([]);
 
-  React.useEffect(() => {
-    //fetch the single most recent generation from the database
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "https://glacial-escarpment-05495.herokuapp.com/homeRoutes"
-        );
-        //console.log("response data: ", JSON.stringify(response.data, null, 2));
-        console.log("response data: ", response.data[0].CA);
-        setData(response.data[0]);
-      } catch (err) {
-        console.log("Error fetching data: ", err);
-      }
-    };
-    fetchData();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      //fetch the single most recent generation from the database
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(
+            "https://glacial-escarpment-05495.herokuapp.com/homeRoutes"
+          );
+          //console.log("response data: ", JSON.stringify(response.data, null, 2));
+          console.log("response data: ", response.data[0].CA);
+          setData(response.data[0]);
+        } catch (err) {
+          console.log("Error fetching data: ", err);
+        }
+      };
+      fetchData();
+
+      // Return a cleanup function to cancel any ongoing request if the component is unmounted
+      return () => {
+        // Cancel the request if needed
+      };
+    }, [])
+  );
 
   return (
     <View style={{ flexDirection: "column", flex: 1 }}>

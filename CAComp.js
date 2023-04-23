@@ -2,13 +2,14 @@ import React, { useCallback, useEffect } from "react";
 import { Button, View, Dimensions, TouchableOpacity } from "react-native";
 import produce from "immer";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 const CAComp = (props) => {
   const { width } = Dimensions.get("window");
   const myPatterns = require("./patterns");
   const Color = require("color");
   const simulationSpeed = 200;
-
+  const navigation = useNavigation();
   const [currentPattern, setCurrentPattern] = React.useState();
 
   const [grid, setGrid] = React.useState(() => {
@@ -153,8 +154,8 @@ const CAComp = (props) => {
       console.log("setting current pattern as: ", randomPattern);
 
       addPattern(
-        props.patterns[0].y,
-        props.patterns[0].x,
+        myPatterns.patternSaveLocations[randomPattern][1],
+        myPatterns.patternSaveLocations[randomPattern][0],
         myPatterns[randomPattern],
         props.patterns[0].color
       );
@@ -187,7 +188,11 @@ const CAComp = (props) => {
     });
   };
 
-  const submitGeneration = async () => {
+  const submitGeneration = async (navigation) => {
+    //decide on x and y coordinates for the pattern
+    var posX = myPatterns.patternSaveLocations[currentPattern][0];
+    var posY = myPatterns.patternSaveLocations[currentPattern][1];
+
     const generationData = {
       locationName: props.locationName,
       location: {
@@ -199,8 +204,8 @@ const CAComp = (props) => {
       CA: [
         {
           pattern: currentPattern,
-          x: 5,
-          y: 5,
+          x: posX,
+          y: posY,
           color: props.patterns[0].color,
         },
       ],
@@ -222,6 +227,8 @@ const CAComp = (props) => {
     } catch (err) {
       console.log("Error submitting generation: ", err);
     }
+
+    navigation.navigate("Home", { refresh: true });
   };
 
   const [patterns, setPatterns] = React.useState(() => {
@@ -275,7 +282,7 @@ const CAComp = (props) => {
       </View>
       {props.location === "Add" && (
         <>
-          <Button title="Submit" onPress={() => submitGeneration()} />
+          <Button title="Submit" onPress={() => submitGeneration(navigation)} />
         </>
       )}
     </TouchableOpacity>

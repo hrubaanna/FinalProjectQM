@@ -22,7 +22,6 @@ const MapScreen = () => {
     },
   ];
 
-  const [userLocation, setUserLocation] = React.useState([]);
   const [data, setData] = React.useState([]);
   const width = Dimensions.get("window").width;
   const numRows = 100;
@@ -53,8 +52,10 @@ const MapScreen = () => {
       //Uncomment this line to use the user's location
       //const {latitude, longitude} = location;
 
-      const latitude = location.latitude;
-      const longitude = location.longitude;
+      const latitude = location.longitude;
+      const longitude = location.latitude;
+
+      console.log("users location: ", latitude, longitude);
 
       try {
         const response = await axios.get(
@@ -121,6 +122,8 @@ const MapScreen = () => {
       return Math.max(max, distance);
     }, 0);
 
+    console.log("max distance: ", maxDistance);
+
     const scalingFactorX = maxDistance / userGridX;
     const scalingFactorY = maxDistance / userGridY;
 
@@ -151,6 +154,17 @@ const MapScreen = () => {
 
       const gridX = userGridX + Math.floor(distanceX / scalingFactorX);
       const gridY = userGridY + Math.floor(distanceY / scalingFactorY);
+
+      console.log(
+        "gridX: ",
+        gridX,
+        "gridY: ",
+        gridY,
+        "longitude: ",
+        longitude,
+        "latitude: ",
+        latitude
+      );
 
       const newItem = {
         CA: item.CA.map((ca) => ({

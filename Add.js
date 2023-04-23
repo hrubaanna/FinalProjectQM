@@ -5,7 +5,6 @@ import { launchCamera } from "react-native-image-picker";
 import ImageColors from "react-native-image-colors";
 import CAComp from "./CAComp";
 import { Dimensions } from "react-native";
-import axios from "axios";
 
 import { Button, Image, StyleSheet, Text, TextInput, View } from "react-native";
 
@@ -16,7 +15,6 @@ const AddScreen = () => {
   const [longitude, setLongitude] = React.useState(null);
   const [imgUri, setImgUri] = React.useState(null);
   const [prominentColor, setProminentColor] = React.useState(null);
-  const [backgroundColor, setBackgroundColor] = React.useState("white");
   const [showCA, setShowCA] = React.useState(true);
   const [step, setStep] = React.useState(0);
   const [description, setDescription] = React.useState(null);
@@ -166,7 +164,6 @@ const AddScreen = () => {
       key: "myKey",
     });
     setProminentColor(result.primary);
-    setBackgroundColor(result.background);
     setImgUri(null);
   };
 
@@ -185,29 +182,59 @@ const AddScreen = () => {
         alignItems: "center",
       }}
     >
-      <View
+      {/* <View
         style={{
           backgroundColor: prominentColor,
           padding: 20,
           borderRadius: 10,
           width: "80%",
         }}
-      ></View>
+      ></View> */}
 
-      <Text style={{ fontSize: 24 }}>Create a new generation:</Text>
+      {/* The third step of adding a new generation: */}
+      {step == 2 && (
+        <>
+          <TextInput
+            onChangeText={onChangeText}
+            style={{
+              height: 40,
+              borderColor: "lightgray",
+              borderWidth: 1,
+              borderRadius: 10,
+              width: "80%",
+              padding: 10,
+            }}
+            placeholder="Enter description"
+            value={text}
+          />
+          <Button
+            title="Save Description"
+            onPress={this.handleSubmitDescription}
+          />
+        </>
+      )}
 
-      {area && <Text>Your location: {area}</Text>}
+      {(step == 1 || step == 3) && (
+        <>
+          <Text style={{ fontSize: 24 }}>Create a new generation:</Text>
+        </>
+      )}
 
-      {imgUri && (
+      {imgUri && step == 2 && (
         <Image
           source={{
             uri: imgUri,
           }}
-          style={{ width: 200, height: 200 }}
+          style={{ width: 200, height: 200, borderRadius: 10 }}
         />
       )}
 
-      {description && <Text>Description: {description}</Text>}
+      {area && (
+        <Text style={{ color: "gray", margin: 5 }}>Your location: {area}</Text>
+      )}
+      {description && (
+        <Text style={{ color: "gray" }}>Description: {description}</Text>
+      )}
 
       {/* The first step of adding a new generation: */}
       {step == 0 && (
@@ -219,22 +246,6 @@ const AddScreen = () => {
       {step == 1 && (
         <>
           <Button title="Take a picture" onPress={this.handleImage} />
-        </>
-      )}
-
-      {/* The third step of adding a new generation: */}
-      {step == 2 && (
-        <>
-          <TextInput
-            onChangeText={onChangeText}
-            style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
-            placeholder="Enter description"
-            value={text}
-          />
-          <Button
-            title="Save Description"
-            onPress={this.handleSubmitDescription}
-          />
         </>
       )}
 

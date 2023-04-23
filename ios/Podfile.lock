@@ -423,6 +423,8 @@ PODS:
     - React-perflogger (= 0.71.4)
   - ReactNativeGetLocation (3.0.1):
     - React-Core
+  - RNFS (2.20.0):
+    - React-Core
   - RNImageColors (1.5.2):
     - React-Core
   - RNScreens (3.20.0):
@@ -495,6 +497,7 @@ DEPENDENCIES:
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeGetLocation (from `../node_modules/react-native-get-location`)
+  - RNFS (from `../node_modules/react-native-fs`)
   - RNImageColors (from `../node_modules/react-native-image-colors`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -590,6 +593,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeGetLocation:
     :path: "../node_modules/react-native-get-location"
+  RNFS:
+    :path: "../node_modules/react-native-fs"
   RNImageColors:
     :path: "../node_modules/react-native-image-colors"
   RNScreens:
@@ -647,12 +652,13 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 8fa50b38df6b992c76537993a2b0553d3b088004
   ReactCommon: b49a4b00ca6d181ff74b17c12b2d59ac4add0bde
   ReactNativeGetLocation: d8e41c5d499fd26f308502405cadb1f59e6179d6
+  RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNImageColors: 9ac05083b52d5c350e6972650ae3ba0e556466c1
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 79dd7410de6f8ad73a77c868d3d368843f0c93e0
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 90f8ec43443af20ea8cb19504dcfeba4ce45a156
+PODFILE CHECKSUM: bfeff813ad60815b3fb1fc4f7c050118a42b2e40
 
 COCOAPODS: 1.12.0
