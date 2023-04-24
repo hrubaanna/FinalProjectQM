@@ -108,7 +108,7 @@ const CellSize = ({ width, height, cellSize }) => {
   );
 };
 
-const MapScreen = ({ route }) => {
+const MapScreen = ({ navigation }) => {
   const [data, setData] = React.useState([]);
   const [scaleX, setScaleX] = React.useState(null);
   const [scaleY, setScaleY] = React.useState(null);
@@ -118,7 +118,7 @@ const MapScreen = ({ route }) => {
   const numRows = 100;
   const numCols = 60;
   const cellWidth = width / numCols;
-  const username = route.params.username;
+  const username = navigation.params.username;
 
   const getCurrentLocation = () => {
     return new Promise((resolve, reject) => {

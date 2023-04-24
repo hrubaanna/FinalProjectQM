@@ -1,19 +1,20 @@
 import React from "react";
 import { StyleSheet, Button, View } from "react-native";
 
-const Navigation = ({ navigation, username }) => {
+const Navigation = ({ navigation }) => {
+  const username = props.username;
   return (
     <View style={styles.navigationSpace}>
       <Button
-        onPress={() => navigation.navigate("History", { username })}
+        onPress={() => navigation.navigate("History")}
         title="See History"
       />
       <Button
-        onPress={() => navigation.navigate("Add", { username })}
+        onPress={() => navigation.navigate("Add", { username: username })}
         title="Add new"
       />
       <Button
-        onPress={() => navigation.navigate("Map", { username })}
+        onPress={() => navigation.navigate("Map", { username: username })}
         title="Map"
       />
     </View>

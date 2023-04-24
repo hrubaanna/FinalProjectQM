@@ -20,12 +20,12 @@ const dateToDay = (dateTime) => {
   return days[date.getDay()];
 };
 
-const HomeScreen = ({ navigation, route }) => {
+const HomeScreen = ({ navigation }) => {
   const width = Dimensions.get("window").width;
   const numRows = 20;
   const numCols = 20;
   const cellWidth = width / numCols;
-  const username = route.params.username;
+  const username = navigation.params.username;
 
   const [data, setData] = React.useState([]);
 

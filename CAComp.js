@@ -227,7 +227,7 @@ const CAComp = (props) => {
       console.log("Error submitting generation: ", err);
     }
 
-    navigation.navigate("Home", { username: props.username });
+    navigation.navigate("Home", { refresh: true });
   };
 
   const [patterns, setPatterns] = React.useState(() => {
