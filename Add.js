@@ -8,7 +8,7 @@ import { Dimensions } from "react-native";
 
 import { Button, Image, Text, TextInput, View } from "react-native";
 
-const AddScreen = ({ navigation }) => {
+const AddScreen = ({ navigation, route }) => {
   const [text, onChangeText] = React.useState(null);
   const [area, setArea] = React.useState(null);
   const [latitude, setLatitude] = React.useState(null);
@@ -18,8 +18,9 @@ const AddScreen = ({ navigation }) => {
   const [showCA, setShowCA] = React.useState(true);
   const [step, setStep] = React.useState(0);
   const [description, setDescription] = React.useState(null);
+  const Environment = require("./Environment");
 
-  const username = navigation.params.username;
+  const username = route.params.username;
 
   const width = Dimensions.get("window").width;
   const numRows = 20;
@@ -86,9 +87,9 @@ const AddScreen = ({ navigation }) => {
   getLocationName = (latitude, longitude) => {
     return new Promise((resolve, reject) => {
       //use Google API to get the name of the location
-      //const key = Environment.GOOGLE_API_KEY;
+      const key = Environment.GOOGLE_API_KEY;
       //for use with heroku:
-      const key = process.env.GOOGLE_API_KEY;
+      //const key = process.env.GOOGLE_API_KEY;
 
       Geocoder.init(key);
       Geocoder.from(latitude, longitude)
