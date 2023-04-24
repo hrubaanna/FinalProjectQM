@@ -6,9 +6,9 @@ import ImageColors from "react-native-image-colors";
 import CAComp from "./CAComp";
 import { Dimensions } from "react-native";
 
-import { Button, Image, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, Image, Text, TextInput, View } from "react-native";
 
-const AddScreen = () => {
+const AddScreen = ({ navigation }) => {
   const [text, onChangeText] = React.useState(null);
   const [area, setArea] = React.useState(null);
   const [latitude, setLatitude] = React.useState(null);
@@ -19,11 +19,12 @@ const AddScreen = () => {
   const [step, setStep] = React.useState(0);
   const [description, setDescription] = React.useState(null);
 
+  const username = navigation.params.username;
+
   const width = Dimensions.get("window").width;
   const numRows = 20;
   const numCols = 20;
   const cellWidth = width / numCols;
-  var Environment = require("./Environment");
   const myPatterns = require("./patterns");
 
   const pattern = [
@@ -267,6 +268,7 @@ const AddScreen = () => {
                 cellWidth={cellWidth}
                 patterns={pattern}
                 color={prominentColor}
+                username={username}
               />
             </>
           ) : null}

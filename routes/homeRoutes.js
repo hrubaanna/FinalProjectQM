@@ -5,8 +5,10 @@ const router = express.Router();
 
 //Get the most recent generation
 router.get("/", async (req, res) => {
+  const username = req.query.username;
+
   try {
-    const latestGeneration = await Generation.find()
+    const latestGeneration = await Generation.find({ user: username })
       .sort({ time: -1 })
       .limit(1);
     res.json(latestGeneration);

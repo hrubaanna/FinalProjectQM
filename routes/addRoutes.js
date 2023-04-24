@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Add a new generation
 router.post("/", async (req, res) => {
-  const { locationName, location, time, description, CA } = req.body;
+  const { user, locationName, location, time, description, CA } = req.body;
 
   try {
     const newGeneration = new Generation({
@@ -13,6 +13,7 @@ router.post("/", async (req, res) => {
       location,
       time,
       description,
+      user,
       CA,
     });
 

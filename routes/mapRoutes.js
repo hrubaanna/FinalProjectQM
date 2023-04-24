@@ -5,10 +5,11 @@ const router = express.Router();
 
 //Get the generations closest to the user's location
 router.get("/", async (req, res) => {
-  const { latitude, longitude } = req.query;
+  const { user, latitude, longitude } = req.query;
 
   try {
     const closestGenerations = await Generation.find({
+      user,
       location: {
         $nearSphere: {
           $geometry: {

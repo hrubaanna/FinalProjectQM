@@ -25,6 +25,7 @@ const HomeScreen = ({ navigation }) => {
   const numRows = 20;
   const numCols = 20;
   const cellWidth = width / numCols;
+  const username = navigation.params.username;
 
   const [data, setData] = React.useState([]);
 
@@ -34,7 +35,7 @@ const HomeScreen = ({ navigation }) => {
       const fetchData = async () => {
         try {
           const response = await axios.get(
-            "https://glacial-escarpment-05495.herokuapp.com/homeRoutes"
+            `https://glacial-escarpment-05495.herokuapp.com/homeRoutes?username=${username}`
           );
           //console.log("response data: ", JSON.stringify(response.data, null, 2));
           console.log("response data: ", response.data[0].CA);
@@ -73,7 +74,7 @@ const HomeScreen = ({ navigation }) => {
         </Text>
       </View>
       {/* This view is the navigation space  */}
-      <Navigation navigation={navigation} />
+      <Navigation navigation={navigation} username={username} />
     </View>
   );
 };

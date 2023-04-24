@@ -108,7 +108,7 @@ const CellSize = ({ width, height, cellSize }) => {
   );
 };
 
-const MapScreen = () => {
+const MapScreen = ({ navigation }) => {
   const [data, setData] = React.useState([]);
   const [scaleX, setScaleX] = React.useState(null);
   const [scaleY, setScaleY] = React.useState(null);
@@ -118,6 +118,7 @@ const MapScreen = () => {
   const numRows = 100;
   const numCols = 60;
   const cellWidth = width / numCols;
+  const username = navigation.params.username;
 
   const getCurrentLocation = () => {
     return new Promise((resolve, reject) => {
@@ -150,7 +151,7 @@ const MapScreen = () => {
 
       try {
         const response = await axios.get(
-          `https://glacial-escarpment-05495.herokuapp.com/mapRoutes?latitude=${latitude}&longitude=${longitude}`
+          `https://glacial-escarpment-05495.herokuapp.com/mapRoutes?latitude=${latitude}&longitude=${longitude}&user=${username}`
         );
         //console.log("response data: ", JSON.stringify(response.data, null, 2));
         let mappedToCoordinates = getScaledCoordinates(

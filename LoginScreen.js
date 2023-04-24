@@ -23,7 +23,7 @@ const LoginScreen = ({ navigation }) => {
       );
       if (response.data.success) {
         console.log("Login successful");
-        navigation.navigate("Home");
+        navigation.navigate("Home", { username: username });
       } else {
         console.log("Login failed");
         console.log("response: ", response.data);

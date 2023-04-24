@@ -199,6 +199,7 @@ const CAComp = (props) => {
       },
       time: new Date(),
       description: props.description,
+      user: props.username,
       CA: [
         {
           pattern: currentPattern,

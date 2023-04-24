@@ -5,8 +5,11 @@ const router = express.Router();
 
 //Get all generations
 router.get("/", async (req, res) => {
+  username = req.query.username;
   try {
-    const generations = await Generation.find().sort({ time: -1 });
+    const generations = await Generation.find({ user: username }).sort({
+      time: -1,
+    });
     res.json(generations);
   } catch (err) {
     console.log(err);
