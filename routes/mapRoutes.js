@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
           },
         },
       },
-    }).limit(20);
+    }).limit(40);
     console.log(closestGenerations);
     res.json(closestGenerations);
   } catch (err) {
