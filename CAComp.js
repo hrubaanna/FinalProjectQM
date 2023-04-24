@@ -10,7 +10,7 @@ const CAComp = (props) => {
   const Color = require("color");
   const simulationSpeed = 200;
   const navigation = useNavigation();
-  const [currentPattern, setCurrentPattern] = React.useState();
+  const [currentPattern, setCurrentPattern] = React.useState(props.patterns);
 
   const [grid, setGrid] = React.useState(() => {
     const rows = [];
@@ -188,8 +188,16 @@ const CAComp = (props) => {
 
   const submitGeneration = async (navigation) => {
     //decide on x and y coordinates for the pattern
-    var posX = myPatterns.patternSaveLocations[currentPattern][0];
-    var posY = myPatterns.patternSaveLocations[currentPattern][1];
+    var patternName;
+
+    if (typeof currentPattern === "string") {
+      console.log("pattern: ", currentPattern);
+      patternName = currentPattern;
+    } else {
+      patternName = currentPattern[0].pattern;
+    }
+    var posX = myPatterns.patternSaveLocations[patternName][0];
+    var posY = myPatterns.patternSaveLocations[patternName][1];
 
     const generationData = {
       locationName: props.locationName,
@@ -202,15 +210,13 @@ const CAComp = (props) => {
       user: props.username,
       CA: [
         {
-          pattern: currentPattern,
+          pattern: patternName,
           x: posX,
           y: posY,
-          color: props.patterns[0].color,
+          color: props.color,
         },
       ],
     };
-
-    // console.log("generation to be saved: ", generationData);
 
     try {
       const response = await axios.post(
@@ -227,8 +233,36 @@ const CAComp = (props) => {
       console.log("Error submitting generation: ", err);
     }
 
-    navigation.navigate("Home", { refresh: true });
+    navigation.navigate("Home", { username: props.username });
   };
+
+  const resetGrid = () => {
+    setGrid(() => {
+      const rows = [];
+      for (let i = 0; i < props.numRows; i++) {
+        rows.push(
+          Array.from(Array(props.numCols), () => ({
+            value: 0,
+            color: "rgb(255, 255, 255)",
+          }))
+        );
+      }
+      return rows;
+    });
+  };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      if (props.location == "Add" || props.location == "Home") {
+        resetGrid();
+        if (props.location == "Add") {
+          //update colour
+          setColor(props.color);
+        }
+      }
+    });
+    return unsubscribe;
+  }, [navigation, props.location]);
 
   const [patterns, setPatterns] = React.useState(() => {
     //set up patterns to be added to the grid

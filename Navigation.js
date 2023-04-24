@@ -1,12 +1,11 @@
 import React from "react";
 import { StyleSheet, Button, View } from "react-native";
 
-const Navigation = ({ navigation }) => {
-  const username = props.username;
+const Navigation = ({ navigation, username }) => {
   return (
     <View style={styles.navigationSpace}>
       <Button
-        onPress={() => navigation.navigate("History")}
+        onPress={() => navigation.navigate("History", { username: username })}
         title="See History"
       />
       <Button

@@ -63,15 +63,16 @@ const GenerationItem = (props) => {
   );
 };
 
-const HistoryScreen = () => {
+const HistoryScreen = ({ route }) => {
   const [data, setData] = React.useState([]);
+  const username = route.params.username;
 
   React.useEffect(() => {
     //fetch the generations from the server, sorted by date
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://glacial-escarpment-05495.herokuapp.com/historyRoutes"
+          `https://glacial-escarpment-05495.herokuapp.com/historyRoutes?username=${username}`
         );
         setData(response.data);
       } catch (err) {

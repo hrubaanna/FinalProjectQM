@@ -5,10 +5,11 @@ import { launchCamera } from "react-native-image-picker";
 import ImageColors from "react-native-image-colors";
 import CAComp from "./CAComp";
 import { Dimensions } from "react-native";
+import Environment from "./Environment";
 
 import { Button, Image, Text, TextInput, View } from "react-native";
 
-const AddScreen = ({ navigation }) => {
+const AddScreen = ({ navigation, route }) => {
   const [text, onChangeText] = React.useState(null);
   const [area, setArea] = React.useState(null);
   const [latitude, setLatitude] = React.useState(null);
@@ -18,8 +19,9 @@ const AddScreen = ({ navigation }) => {
   const [showCA, setShowCA] = React.useState(true);
   const [step, setStep] = React.useState(0);
   const [description, setDescription] = React.useState(null);
+  const [imageResponse, setImageResponse] = React.useState(null);
 
-  const username = navigation.params.username;
+  const username = route.params.username;
 
   const width = Dimensions.get("window").width;
   const numRows = 20;
@@ -40,32 +42,31 @@ const AddScreen = ({ navigation }) => {
   ];
 
   handleNextStep = () => {
-    if (step < 4) {
-      setStep(step + 1);
-    } else {
-      //step == 4 -> reset to 0
+    setStep(step + 1);
+  };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      //reset all variables to their initial state
       setStep(0);
       //reset all states
       onChangeText(null);
-      setLocation(null);
       setArea(null);
-      setImgPath(null);
-      setImgData(null);
+      setLatitude(null);
+      setLongitude(null);
       setImgUri(null);
       setProminentColor(null);
-      setShowCA(false);
+      setShowCA(true);
       setDescription(null);
-    }
-  };
+      setImageResponse(null);
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   handleSubmitDescription = () => {
     setDescription(text);
-
-    if (step == 2) {
-      this.extractDominantColor();
-    }
-
     handleNextStep();
+    setImgUri(null);
   };
 
   getCurrentLocation = () => {
@@ -86,9 +87,9 @@ const AddScreen = ({ navigation }) => {
   getLocationName = (latitude, longitude) => {
     return new Promise((resolve, reject) => {
       //use Google API to get the name of the location
-      //const key = Environment.GOOGLE_API_KEY;
+      const key = Environment.GOOGLE_API_KEY;
       //for use with heroku:
-      const key = process.env.GOOGLE_API_KEY;
+      //const key = process.env.GOOGLE_API_KEY;
 
       Geocoder.init(key);
       Geocoder.from(latitude, longitude)
@@ -138,9 +139,7 @@ const AddScreen = ({ navigation }) => {
       },
     };
 
-    launchCamera(options, (response) => {
-      console.log("_______________________");
-      console.log("response", response);
+    launchCamera(options, async (response) => {
       if (response.didCancel) {
         console.log("User cancelled image picker");
       } else if (response.error) {
@@ -151,29 +150,29 @@ const AddScreen = ({ navigation }) => {
         //let source = {uri: response.uri};
         const asset = response.assets[0];
         setImgUri(asset.uri);
+
+        console.log("____________________");
+        await extractDominantColor(asset.uri);
+        setImageResponse(response);
       }
-      console.log("_______________________");
     });
 
     handleNextStep();
   };
 
-  extractDominantColor = async () => {
-    const result = await ImageColors.getColors(imgUri, {
+  extractDominantColor = async (imageUri) => {
+    console.log("imgUri:", imageUri);
+
+    const result = await ImageColors.getColors(imageUri, {
       fallback: "rgb(255, 255, 255)",
-      cache: true,
+      cache: false,
       key: "myKey",
     });
-    setProminentColor(result.primary);
-    setImgUri(null);
-  };
 
-  React.useEffect(() => {
-    //update the dominant color when it changes
-    if (prominentColor) {
-      pattern[0].color = prominentColor;
-    }
-  }, [prominentColor]);
+    setTimeout(() => {}, 200);
+    console.log("result color:", result.primary);
+    setProminentColor(result.primary);
+  };
 
   return (
     <View
@@ -183,15 +182,6 @@ const AddScreen = ({ navigation }) => {
         alignItems: "center",
       }}
     >
-      {/* <View
-        style={{
-          backgroundColor: prominentColor,
-          padding: 20,
-          borderRadius: 10,
-          width: "80%",
-        }}
-      ></View> */}
-
       {/* The third step of adding a new generation: */}
       {step == 2 && (
         <>
@@ -208,10 +198,7 @@ const AddScreen = ({ navigation }) => {
             placeholder="Enter description"
             value={text}
           />
-          <Button
-            title="Save Description"
-            onPress={this.handleSubmitDescription}
-          />
+          <Button title="Save Description" onPress={handleSubmitDescription} />
         </>
       )}
 
@@ -240,13 +227,13 @@ const AddScreen = ({ navigation }) => {
       {/* The first step of adding a new generation: */}
       {step == 0 && (
         <>
-          <Button title="Get location" onPress={this.handleGetLocation} />
+          <Button title="Get location" onPress={handleGetLocation} />
         </>
       )}
       {/* The second step of adding a new generation: */}
       {step == 1 && (
         <>
-          <Button title="Take a picture" onPress={this.handleImage} />
+          <Button title="Take a picture" onPress={handleImage} />
         </>
       )}
 
