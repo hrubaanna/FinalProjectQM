@@ -181,6 +181,7 @@ const MapScreen = ({ navigation, route }) => {
   const haversineDistance = (lat1, lon1, lat2, lon2) => {
     //use the Haversine formula to calculate the distance
     //between two points on the Earth's surface, given their latitude and longitude
+    //(c) Chris Veness 2002-2021 https://www.movable-type.co.uk/scripts/latlong.html
 
     const R = 6371e3; // Earth's radius in meters
     const phi1 = toRadians(lat1);

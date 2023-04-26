@@ -87,9 +87,9 @@ const AddScreen = ({ navigation, route }) => {
   getLocationName = (latitude, longitude) => {
     return new Promise((resolve, reject) => {
       //use Google API to get the name of the location
-      const key = Environment.GOOGLE_API_KEY;
+      //const key = Environment.GOOGLE_API_KEY;
       //for use with heroku:
-      //const key = process.env.GOOGLE_API_KEY;
+      const key = process.env.GOOGLE_API_KEY;
 
       Geocoder.init(key);
       Geocoder.from(latitude, longitude)
@@ -97,9 +97,6 @@ const AddScreen = ({ navigation, route }) => {
           var addressComponent = json.results[0].address_components;
 
           //find area name from addressComponent
-          // var area = addressComponent.find((item) => {
-          //   return item.types.includes("neighborhood");
-          // });
 
           var area = addressComponent[2].short_name;
 
@@ -147,11 +144,9 @@ const AddScreen = ({ navigation, route }) => {
       } else if (response.customButton) {
         console.log("User tapped custom button: ", response.customButton);
       } else {
-        //let source = {uri: response.uri};
         const asset = response.assets[0];
         setImgUri(asset.uri);
 
-        console.log("____________________");
         await extractDominantColor(asset.uri);
         setImageResponse(response);
       }

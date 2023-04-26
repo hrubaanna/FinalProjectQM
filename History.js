@@ -94,7 +94,6 @@ const HistoryScreen = ({ route }) => {
               time={item.time}
               description={item.description}
               CA={item.CA}
-              // onPress={() => handleItemPress(item)}
             />
           )}
         />
