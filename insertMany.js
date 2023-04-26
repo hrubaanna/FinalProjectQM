@@ -66,10 +66,10 @@ let descriptionArr = [
 ];
 
 const getCoordinates = () => {
-  const minX = 51.52;
-  const maxX = 51.54;
-  const minY = -0.01;
-  const maxY = -0.05;
+  const minX = 51.53;
+  const maxX = 51.541;
+  const minY = -0.087;
+  const maxY = -0.066;
   //get random range between minX and maxX
   let randomX = Math.random() * (maxX - minX) + minX;
   //get random range between minY and maxY

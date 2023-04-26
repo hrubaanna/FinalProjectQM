@@ -15,14 +15,13 @@ const CAComp = (props) => {
   const [grid, setGrid] = React.useState(() => {
     const rows = [];
     for (let i = 0; i < props.numRows; i++) {
-      //setup random grid
+      //setup empty grid
       rows.push(
         Array.from(Array(props.numCols), () =>
-          //populate the grid with cells that are object with a random value and a color
+          //populate the grid with cells that are objects with a value and a color
           ({
-            //value: Math.random() > 0.7 ? 1 : 0,
             value: 0,
-            color: Math.random() > 0.7 ? "rgb(255,0,0)" : "rgb(0,0,255)",
+            color: "rgb(255,0,0)",
           })
         )
       );
@@ -62,6 +61,7 @@ const CAComp = (props) => {
               myPatterns.operations.forEach(([x, y]) => {
                 const newI = i + x;
                 const newJ = j + y;
+                //check whether the neighbor is in bounds
                 if (
                   newI >= 0 &&
                   newI < props.numRows &&
