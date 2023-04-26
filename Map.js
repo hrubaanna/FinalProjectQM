@@ -264,6 +264,7 @@ const MapScreen = ({ navigation, route }) => {
     let minY = 45;
     let maxY = 0;
 
+    console.log("first item added to the grid: ", data[0].location.coordinates);
     const gridData = data.map((item) => {
       const [longitude, latitude] = item.location.coordinates;
       const distanceXItem = haversineDistance(
