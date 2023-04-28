@@ -5,14 +5,24 @@ import {
   View,
   TouchableOpacity,
   TextInput,
+  Modal,
 } from "react-native";
 import axios from "axios";
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [errorName, setErrorName] = React.useState("");
+  const [errorText, setErrorText] = React.useState("");
 
   const handleLogin = async () => {
+    if (username === "" || password === "") {
+      setErrorName("Login Error:");
+      setErrorText("Username and password cannot be empty.");
+      setModalVisible(true);
+      return;
+    }
     try {
       const response = await axios.post(
         "https://glacial-escarpment-05495.herokuapp.com/userRoutes/login",
@@ -24,17 +34,44 @@ const LoginScreen = ({ navigation }) => {
       if (response.data.success) {
         console.log("Login successful");
         navigation.navigate("Home", { username: username });
-      } else {
-        console.log("Login failed");
-        console.log("response: ", response.data);
       }
     } catch (error) {
       console.log("Error logging in: ", error);
+      if (error.response.status === 503) {
+        setErrorName("Server Error:");
+        setErrorText("Please try again later.");
+        setModalVisible(true);
+      } else if (error.response.status === 404) {
+        setErrorName("Login Error:");
+        setErrorText("Username not found.");
+        setModalVisible(true);
+      } else if (error.response.status === 400) {
+        setErrorName("Login Error:");
+        setErrorText("Incorrect password.");
+        setModalVisible(true);
+      }
     }
   };
 
   return (
     <View style={styles.container}>
+      {modalVisible && (
+        <Modal animationType="slide">
+          <View style={styles.popup}>
+            <Text style={{ fontSize: 30 }}> {errorName} </Text>
+            <Text style={{ margin: 5, fontSize: 25, padding: 15 }}>
+              {errorText}
+            </Text>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.buttonText}>Try Again</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      )}
+
       <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
@@ -59,6 +96,25 @@ const LoginScreen = ({ navigation }) => {
         <Text style={styles.registerButtonText}>Register</Text>
       </TouchableOpacity>
     </View>
+  );
+};
+
+const ErrorComp = ({ errorName, errorText }) => {
+  return (
+    <Modal animationType="slide">
+      <View style={styles.popup}>
+        <Text style={{ fontSize: 30 }}> {errorName} </Text>
+        <Text style={{ margin: 5, fontSize: 25, padding: 15 }}>
+          {errorText}
+        </Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setModalVisible(false)}
+        >
+          <Text style={styles.buttonText}>Try Again</Text>
+        </TouchableOpacity>
+      </View>
+    </Modal>
   );
 };
 
@@ -98,6 +154,11 @@ const styles = StyleSheet.create({
   registerButtonText: {
     color: "#007AFF",
     fontSize: 16,
+  },
+  popup: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

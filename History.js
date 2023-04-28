@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   FlatList,
+  Modal,
 } from "react-native";
 import CAComp from "./CAComp";
 import axios from "axios";
@@ -77,6 +78,9 @@ const HistoryScreen = ({ route }) => {
         setData(response.data);
       } catch (err) {
         console.log("Error fetching data: ", err);
+        if (err.response.status === 500) {
+          setModalVisible(true);
+        }
       }
     };
     fetchData();
@@ -84,6 +88,30 @@ const HistoryScreen = ({ route }) => {
 
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
+      {modalVisible && (
+        <Modal animationType="slide">
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text style={{ fontSize: 30 }}> Server Error. </Text>
+            <Text style={{ margin: 5, fontSize: 25, padding: 15 }}>
+              Error loading content. Please try again later.
+            </Text>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#007AFF",
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                borderRadius: 4,
+                marginBottom: 16,
+              }}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={{ color: "#fff", fontSize: 16 }}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      )}
       <View style={styles.generationsList}>
         {/* All previous additions */}
         <FlatList

@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 
 import axios from "axios";
@@ -14,6 +15,9 @@ const RegisterScreen = ({ navigation }) => {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [errorName, setErrorName] = React.useState("");
+  const [errorText, setErrorText] = React.useState("");
 
   const handleRegister = async () => {
     if (password !== confirmPassword) {
@@ -31,16 +35,47 @@ const RegisterScreen = ({ navigation }) => {
       if (response.data.success) {
         console.log("Register successful");
         navigation.navigate("Login");
-      } else {
-        console.log("Register failed");
       }
     } catch (error) {
       console.log("Error registering: ", error);
+      if (error.response.status == 409) {
+        setErrorName("Register Error:");
+        setErrorText("Username already exists.");
+        setModalVisible(true);
+      } else if (error.response.status == 500) {
+        setErrorName("Server Error:");
+        setErrorText("Please try later.");
+        setModalVisible(true);
+      }
     }
   };
 
   return (
     <View style={styles.container}>
+      {modalVisible && (
+        <Modal animationType="slide">
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text style={{ fontSize: 30 }}> {errorName} </Text>
+            <Text style={{ margin: 5, fontSize: 25, padding: 15 }}>
+              {errorText}
+            </Text>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#007AFF",
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                borderRadius: 4,
+                marginBottom: 16,
+              }}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={{ color: "#fff", fontSize: 16 }}>Try Again</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      )}
       <Text style={styles.title}>Register</Text>
       <TextInput
         style={styles.input}

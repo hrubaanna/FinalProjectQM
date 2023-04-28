@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Button, Image, Text, View } from "react-native";
+import { StyleSheet, Text, View, Modal, TouchableOpacity } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import Navigation from "./Navigation";
 import CAComp from "./CAComp";
@@ -28,6 +28,7 @@ const HomeScreen = ({ navigation, route }) => {
   const username = route.params.username;
 
   const [data, setData] = React.useState([]);
+  const [modalVisible, setModalVisible] = React.useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -42,6 +43,9 @@ const HomeScreen = ({ navigation, route }) => {
           setData(response.data[0]);
         } catch (err) {
           console.log("Error fetching data: ", err);
+          if (err.response.status === 500) {
+            setModalVisible(true);
+          }
         }
       };
       fetchData();
@@ -55,6 +59,30 @@ const HomeScreen = ({ navigation, route }) => {
 
   return (
     <View style={{ flexDirection: "column", flex: 1 }}>
+      {modalVisible && (
+        <Modal animationType="slide">
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text style={{ fontSize: 30 }}> Server Error. </Text>
+            <Text style={{ margin: 5, fontSize: 25, padding: 15 }}>
+              Error loading content. Please try again later.
+            </Text>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#007AFF",
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                borderRadius: 4,
+                marginBottom: 16,
+              }}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={{ color: "#fff", fontSize: 16 }}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      )}
       <View style={styles.lastGeneration}>
         {/* This view holds the information about the last generation
             added by the user

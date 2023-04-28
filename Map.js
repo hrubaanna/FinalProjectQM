@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View, Modal, TouchableOpacity } from "react-native";
 import CAComp from "./CAComp";
 import { Dimensions } from "react-native";
 import axios from "axios";
@@ -117,9 +117,9 @@ const MapScreen = ({ navigation, route }) => {
   const [scaleY, setScaleY] = React.useState(null);
   const [cellSizeX, setCellSizeX] = React.useState(null);
   const [cellSizeY, setCellSizeY] = React.useState(null);
+  const [modalVisible, setModalVisible] = React.useState(false);
   const width = Dimensions.get("window").width;
-  const height = Dimensions.get("window").height;
-  const numRows = 90;
+  const numRows = 75;
   const numCols = 40;
   const cellWidth = width / numCols;
   const username = route.params.username;
@@ -169,6 +169,9 @@ const MapScreen = ({ navigation, route }) => {
         setData(transformedData);
       } catch (err) {
         console.log("Error fetching data: ", err);
+        if (err.response.status === 500) {
+          setModalVisible(true);
+        }
       }
     };
     fetchData();
@@ -294,6 +297,11 @@ const MapScreen = ({ navigation, route }) => {
       let scaledX = Math.floor(distanceXItem / distanceX);
       let scaledY = Math.floor(distanceYItem / distanceY);
 
+      if (scaledX < 2 && scaledY < 2) {
+        console.log("item near");
+        console.log(item.CA[0].pattern);
+      }
+
       //get coordinate of each item
       if (longitude < userLongitude) {
         scaledX = scaledX * -1;
@@ -301,6 +309,9 @@ const MapScreen = ({ navigation, route }) => {
       if (latitude < userLatitude) {
         scaledY = scaledY * -1;
       }
+
+      console.log("userGridX: ", userGridX);
+      console.log("userGridY: ", userGridY);
 
       scaledX = scaledX + userGridX;
       scaledY = scaledY + userGridY;
@@ -337,115 +348,32 @@ const MapScreen = ({ navigation, route }) => {
     return gridData;
   };
 
-  const getScaledCoordinates = (data, userLatitude, userLongitude) => {
-    //calculate the rows and cols equivalents of the coordinates relative to the user's location
-    //DISNTANCE is applied from the center of the grid
-
-    const userGridY = Math.floor(numCols / 2);
-    const userGridX = Math.floor(numRows / 2);
-
-    //Determine the scaling factor
-    const maxDistanceX = data.reduce((max, item) => {
-      const latitude = item.location.coordinates;
-      const distance = haversineDistance(
-        userLatitude,
-        userLongitude,
-        latitude,
-        userLongitude
-      );
-      return Math.max(max, distance);
-    }, 0);
-
-    //Determine the scaling factor
-    const maxDistanceY = data.reduce((max, item) => {
-      const longitude = item.location.coordinates;
-      const distance = haversineDistance(
-        userLatitude,
-        userLongitude,
-        userLatitude,
-        longitude
-      );
-      return Math.max(max, distance);
-    }, 0);
-
-    const scalingFactorX = maxDistanceX / userGridX;
-    const scalingFactorY = maxDistanceY / userGridY;
-    const scale = Math.max(scalingFactorX, scalingFactorY);
-
-    setScaleY(scalingFactorY);
-    setScaleX(scalingFactorX);
-    setCellSizeX(scalingFactorX);
-    setCellSizeY(scalingFactorY);
-
-    /**LOG DATA */
-    console.log("________________________");
-    console.log("userGridX: ", userGridX);
-    console.log("userGridY: ", userGridY);
-    console.log("scalingFactorX: ", scalingFactorX);
-    console.log("scalingFactorY: ", scalingFactorY);
-    console.log("scale: ", scale);
-    console.log("userLatitude: ", userLatitude);
-    console.log("userLongitude: ", userLongitude);
-    console.log("________________________");
-
-    //transform the coordinates to the rows and cols of the grid
-    const gridData = data.map((item) => {
-      const [longitude, latitude] = item.location.coordinates;
-      let distanceX = haversineDistance(
-        userLatitude,
-        userLongitude,
-        userLatitude,
-        longitude
-      );
-
-      let distanceY = haversineDistance(
-        userLatitude,
-        userLongitude,
-        latitude,
-        userLongitude
-      );
-
-      //get the sign of the distance
-      let multX = 1;
-      let multY = 1;
-
-      console.log("________________________");
-      if (userLatitude < latitude) {
-        console.log("Right");
-        multY - 1;
-      } else {
-        console.log("Left");
-      }
-      if (userLongitude > longitude) {
-        console.log("Down");
-        multX = -1;
-      } else {
-        console.log("Up");
-      }
-
-      const gridX = userGridX + multX * Math.floor(scalingFactorX / distanceX);
-      const gridY = userGridY + multY * Math.floor(scalingFactorY / distanceY);
-      console.log("latitude: " + latitude);
-      console.log("longitude: " + longitude);
-      console.log("added at: ", gridX, gridY);
-      console.log("distanceX: ", distanceX);
-      console.log("distanceY: ", distanceY);
-      console.log("________________________");
-
-      const newItem = {
-        CA: item.CA.map((ca) => ({
-          ...ca,
-          x: gridY,
-          y: gridX,
-        })),
-      };
-      return newItem;
-    });
-    return gridData;
-  };
-
   return (
     <View>
+      {modalVisible && (
+        <Modal animationType="slide">
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text style={{ fontSize: 30 }}> Server Error. </Text>
+            <Text style={{ margin: 5, fontSize: 25, padding: 15 }}>
+              Error loading content. Please try again later.
+            </Text>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#007AFF",
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                borderRadius: 4,
+                marginBottom: 16,
+              }}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={{ color: "#fff", fontSize: 16 }}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      )}
       {scaleY !== null && <ScaleLineY distance={scaleY * numRows} />}
       {scaleX !== null && <ScaleLineX distance={scaleX * numCols} />}
       {cellSizeX !== null && cellSizeY !== null && (

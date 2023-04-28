@@ -7,7 +7,15 @@ import CAComp from "./CAComp";
 import { Dimensions } from "react-native";
 import Environment from "./Environment";
 
-import { Button, Image, Text, TextInput, View } from "react-native";
+import {
+  Button,
+  Image,
+  Text,
+  TextInput,
+  View,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
 
 const AddScreen = ({ navigation, route }) => {
   const [text, onChangeText] = React.useState(null);
@@ -20,6 +28,7 @@ const AddScreen = ({ navigation, route }) => {
   const [step, setStep] = React.useState(0);
   const [description, setDescription] = React.useState(null);
   const [imageResponse, setImageResponse] = React.useState(null);
+  const [modalVisible, setModalVisible] = React.useState(false);
 
   const username = route.params.username;
 
@@ -64,6 +73,11 @@ const AddScreen = ({ navigation, route }) => {
   }, [navigation]);
 
   handleSubmitDescription = () => {
+    if (text === null) {
+      setModalVisible(true);
+      return;
+    }
+
     setDescription(text);
     handleNextStep();
     setImgUri(null);
@@ -87,9 +101,9 @@ const AddScreen = ({ navigation, route }) => {
   getLocationName = (latitude, longitude) => {
     return new Promise((resolve, reject) => {
       //use Google API to get the name of the location
-      //const key = Environment.GOOGLE_API_KEY;
+      const key = Environment.GOOGLE_API_KEY;
       //for use with heroku:
-      const key = process.env.GOOGLE_API_KEY;
+      //const key = process.env.GOOGLE_API_KEY;
 
       Geocoder.init(key);
       Geocoder.from(latitude, longitude)
@@ -177,6 +191,30 @@ const AddScreen = ({ navigation, route }) => {
         alignItems: "center",
       }}
     >
+      {modalVisible && (
+        <Modal animationType="slide">
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text style={{ fontSize: 30 }}> Error: </Text>
+            <Text style={{ margin: 5, fontSize: 25, padding: 15 }}>
+              Add description to continue.
+            </Text>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#007AFF",
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                borderRadius: 4,
+                marginBottom: 16,
+              }}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={{ color: "#fff", fontSize: 16 }}>Try Again</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      )}
       {/* The third step of adding a new generation: */}
       {step == 2 && (
         <>
