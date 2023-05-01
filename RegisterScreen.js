@@ -11,6 +11,12 @@ import {
 
 import axios from "axios";
 
+/***
+ * The Register Screen
+ * This screen allows the user to register for an account
+ * or navigate to the login screen
+ */
+
 const RegisterScreen = ({ navigation }) => {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");

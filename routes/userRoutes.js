@@ -6,6 +6,10 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 //Create a new user
+// POST /register
+// Create a new user and hash the password
+// checks if the username exists in the database
+
 router.post("/register", async (req, res) => {
   try {
     const existingUser = await User.findOne({ username: req.body.username });

@@ -11,6 +11,11 @@ import RegisterScreen from "./RegisterScreen";
 
 const Stack = createNativeStackNavigator();
 
+/***
+ * The App
+ * This is the component that sets up the navigation for the app
+ */
+
 const App = () => {
   return (
     <NavigationContainer>

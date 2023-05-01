@@ -9,6 +9,12 @@ import {
 } from "react-native";
 import axios from "axios";
 
+/***
+ * The Login Screen
+ * This screen allows the user to login to their account
+ * or navigate to the register screen
+ */
+
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");

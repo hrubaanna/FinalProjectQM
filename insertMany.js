@@ -4,6 +4,12 @@ const cors = require("cors");
 const Generation = require("./models/Generation");
 const myPatterns = require("./patterns");
 
+/***
+ * This file is used to insert many generations into the database
+ *
+ * (not used in the app)
+ */
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -17,8 +23,6 @@ mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
-
-//write a function that will insert many documents into the database
 
 let usersArr = ["user1", "anna"];
 //create an array of locations in London, UK, like park names, street names, and so on

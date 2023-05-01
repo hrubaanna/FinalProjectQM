@@ -17,6 +17,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+/***
+ * The Add Screen
+ * This screen allows the user to add a new pattern to the database
+ * The user can add a description, and colour to the pattern
+ * The user can also add their current location to the pattern
+ */
+
 const AddScreen = ({ navigation, route }) => {
   const [text, onChangeText] = React.useState(null);
   const [area, setArea] = React.useState(null);

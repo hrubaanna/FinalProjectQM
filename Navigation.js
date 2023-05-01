@@ -1,6 +1,11 @@
 import React from "react";
 import { StyleSheet, Button, View } from "react-native";
 
+/***
+ * The Navigation
+ * This is the component that sets up the navigation for the app
+ */
+
 const Navigation = ({ navigation, username }) => {
   return (
     <View style={styles.navigationSpace}>

@@ -6,6 +6,12 @@ import CAComp from "./CAComp";
 import { Dimensions } from "react-native";
 import axios from "axios";
 
+/***
+ * The Home Screen
+ * This screen allows the user to view their most recent pattern
+ * and navigate to other screens
+ */
+
 const dateToDay = (dateTime) => {
   const days = [
     "Sunday",

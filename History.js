@@ -10,6 +10,11 @@ import {
 import CAComp from "./CAComp";
 import axios from "axios";
 
+/**
+ * The History Screen
+ * This screen allows the user to view their past patterns
+ */
+
 const dateToString = (dateTime) => {
   const days = [
     "Sunday",
@@ -67,6 +72,7 @@ const GenerationItem = (props) => {
 const HistoryScreen = ({ route }) => {
   const [data, setData] = React.useState([]);
   const username = route.params.username;
+  const [modalVisible, setModalVisible] = React.useState(false);
 
   React.useEffect(() => {
     //fetch the generations from the server, sorted by date

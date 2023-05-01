@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 //const Environment = require("./Environment");
 
+/****
+ * The server.js was user to test the backend routes and database connection.
+ */
+
 const app = express();
 app.use(cors());
 app.use(express.json());

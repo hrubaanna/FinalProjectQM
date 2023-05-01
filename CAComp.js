@@ -4,6 +4,15 @@ import produce from "immer";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 
+/**
+ *
+ * The CAComp
+ * This is the component that sets up the cellular automata simulation
+ * It is used in the AddScreen, HomeScreen, MapScreen, and HistoryScreen
+ * It is used to display the patterns that are loaded in from each screen
+ *
+ */
+
 const CAComp = (props) => {
   const { width } = Dimensions.get("window");
   const myPatterns = require("./patterns");
@@ -36,7 +45,7 @@ const CAComp = (props) => {
   runningRef.current = running;
 
   runSimulation = useCallback(() => {
-    //simulation function from: https://medium.com/swlh/cellular-automata-using-react-a8caeaa375e6
+    //basic part of the simulation function from: https://medium.com/swlh/cellular-automata-using-react-a8caeaa375e6
     //make sure to use current value of runningRef
     if (!runningRef.current) {
       return;

@@ -4,6 +4,9 @@ const Generation = require("../models/Generation");
 const router = express.Router();
 
 //Get all generations
+// GET /history
+// Returns all generations sorted by time in descending order
+
 router.get("/", async (req, res) => {
   username = req.query.username;
   try {

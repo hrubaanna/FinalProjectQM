@@ -4,6 +4,9 @@ const Generation = require("../models/Generation");
 const router = express.Router();
 
 //Get the most recent generation
+// GET /home
+// Returns the single most recent generation created by the user
+
 router.get("/", async (req, res) => {
   const username = req.query.username;
 

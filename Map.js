@@ -5,6 +5,12 @@ import { Dimensions } from "react-native";
 import axios from "axios";
 import GetLocation from "react-native-get-location";
 
+/***
+ * The Map Screen
+ * This screen allows the user to view their past patterns
+ * The user views the patterns in relation to their current location
+ */
+
 const ScaleLineY = ({ distance }) => {
   return (
     <View

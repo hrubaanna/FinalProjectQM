@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 
 //MongoDB schema for a generation
+//a generation is a new pattern that the user has created
+
 const GenerationSchema = new mongoose.Schema({
   locationName: {
     type: String,

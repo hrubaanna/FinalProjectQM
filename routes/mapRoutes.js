@@ -4,6 +4,9 @@ const Generation = require("../models/Generation");
 const router = express.Router();
 
 //Get the generations closest to the user's location
+// GET /map
+// Returns the 40 generations closest to the user's location
+
 router.get("/", async (req, res) => {
   const { user, latitude, longitude } = req.query;
 

@@ -4,6 +4,9 @@ const Generation = require("../models/Generation");
 const router = express.Router();
 
 // Add a new generation
+// POST /add
+// create a Generation object to ensure that all fields are filled out
+
 router.post("/", async (req, res) => {
   const { user, locationName, location, time, description, CA } = req.body;
 
